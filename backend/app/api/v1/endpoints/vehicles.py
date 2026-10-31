@@ -169,12 +169,28 @@ def upload_vehicle_image(
 
     # Guardar con nombre único basado en el ID del vehículo
     filename = f"{vehicle_manufacturer}_{vehicle_model}_{vehicle_variant}_{vehicle_generation}{suffix}"
-    dest = IMAGES_DIR / filename
-    with dest.open("wb") as buffer:
-        shutil.copyfileobj(image.file, buffer)
+    
+    # Intentar subir a S3 si está configurado, si no guardar localmente como fallback
+    from app.services.storage_service import upload_file_to_s3
+    from app.core.config import settings
+    
+    image_url = None
+    if settings.AWS_ACCESS_KEY_ID and settings.AWS_SECRET_ACCESS_KEY:
+        try:
+            content_type = image.content_type or "image/jpeg"
+            image_url = upload_file_to_s3(image.file, filename, content_type)
+        except Exception as e:
+            # Fallback a guardado en disco si falla S3
+            pass
+
+    if not image_url:
+        dest = IMAGES_DIR / filename
+        with dest.open("wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        image_url = f"{IMAGES_BASE_URL}/{filename}"
 
     # Actualizar image_url en BD
     from app.schemas.vehicle import VehicleUpdate as VU
-    update = VU(image_url=f"{IMAGES_BASE_URL}/{filename}")
+    update = VU(image_url=image_url)
     return VehicleService.update(db, vehicle, update)
 

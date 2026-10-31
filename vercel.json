@@ -31,11 +31,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/dist/frontend/browser/$1"
-    },
-    {
-      "src": "/.*",
-      "dest": "/frontend/dist/frontend/browser/index.html"
+      "dest": "/index.html"
     }
   ]
 }

@@ -1,1 +1,69 @@
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.sqlite3
+
+# Node / Angular
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.angular/
+frontend/.angular/
+
+# Vercel
+.vercel/
+
+# Archivos estáticos pesados / uploads locales
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.sqlite3
+
+# Node / Angular
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.angular/
+frontend/.angular/
+
+# Vercel
+.vercel/
+
+# Archivos estáticos pesados / uploads locales
 static/
+backend/static/vehicle_images/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+backend/static/vehicle_images/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store

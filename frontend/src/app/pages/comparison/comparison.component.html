@@ -1,0 +1,99 @@
+<div class="compare-page">
+  <header class="compare-header">
+    <div>
+      <h2 class="title"><span class="gradient-text-red">Comparativa</span> Cara a Cara</h2>
+      <p class="subtitle">Enfrentamiento multivehículo en el mismo trazado bajo condiciones físicas idénticas.</p>
+    </div>
+    <button class="btn btn-primary" (click)="runComparison()"
+      [disabled]="isComparing || selectedVehicleIds.length < 2 || !selectedVariantId">
+      <span *ngIf="isComparing" class="mini-spinner"></span>
+      <span>{{ isComparing ? 'Comparando Física...' : '⚔️ Ejecutar Duelo' }}</span>
+    </button>
+  </header>
+
+  <!-- Track selector -->
+  <div class="track-bar glass-panel">
+    <div class="field">
+      <label>Circuito / Tramo:</label>
+      <select [(ngModel)]="selectedTrackId" (ngModelChange)="onTrackChange()" class="comp-select">
+        <option *ngFor="let t of tracks" [value]="t.id">{{ t.name }}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Variante:</label>
+      <select [(ngModel)]="selectedVariantId" (ngModelChange)="onVariantChange()" class="comp-select">
+        <option *ngFor="let v of currentVariants" [value]="v.id">
+          {{ v.name }} ({{ (v.length_m / 1000).toFixed(2) }} km)
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Feedback / Error Banner -->
+  <div *ngIf="errorMessage" class="error-banner">
+    <span>⚠️ {{ errorMessage }}</span>
+    <button class="close-btn" (click)="errorMessage = ''">✕</button>
+  </div>
+
+  <!-- Vehicle Checkboxes Grid -->
+  <div class="vehicles-selection glass-panel">
+    <label class="section-label">Selecciona 2 o más vehículos para el duelo:</label>
+    <div class="checkbox-grid">
+      <div *ngFor="let v of vehicles" class="check-pill" [class.checked]="isSelected(v.id)"
+        (click)="toggleVehicle(v.id)">
+        <span class="chk">{{ isSelected(v.id) ? '✓' : '+' }}</span>
+        <span class="v-name">{{ v.manufacturer?.name }} {{ v.model }} {{ v.variant }}</span>
+        <span class="badge" [ngClass]="'badge-' + v.drive_type?.toLowerCase()">{{ v.drive_type }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Leaderboard & Results -->
+  <div *ngIf="compareResult" class="results-area">
+    <div class="leaderboard glass-panel">
+      <div class="board-header">
+        <h3>Clasificación Final — {{ compareResult.track_name || selectedTrack?.name }} ({{ compareResult.variant_name || selectedVariant?.name }})</h3>
+        <span *ngIf="compareResult.track_length_m || selectedVariant?.length_m" class="badge badge-circuit">
+          {{ (((compareResult.track_length_m || selectedVariant?.length_m) || 0) / 1000).toFixed(2) }} km
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="dyn-table">
+          <thead>
+            <tr>
+              <th>Pos</th>
+              <th>Vehículo</th>
+              <th>Tiempo</th>
+              <th>Diferencia</th>
+              <th>V. Media</th>
+              <th>V. Punta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of compareResult.results; let i = index" [class.winner]="i === 0">
+              <td class="pos-cell">
+                <span class="pos-badge" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+                  {{ item.rank || (i + 1) }}
+                </span>
+              </td>
+              <td class="name-cell">
+                <b>{{ item.vehicle_label }}</b>
+                <span *ngIf="item.error" class="error-text"> (Error: {{ item.error }})</span>
+              </td>
+              <td class="time-cell highlight-red">
+                {{ item.total_time_s !== undefined && item.total_time_s !== null ? formatTime(item.total_time_s) : 'N/D' }}
+              </td>
+              <td class="gap-cell">
+                <span *ngIf="i === 0" class="gap-leader">LÍDER</span>
+                <span *ngIf="i > 0" class="gap-val">+{{ (gapValues[i] || 0).toFixed(3) }}s</span>
+              </td>
+              <td>{{ item.avg_speed_kph !== undefined && item.avg_speed_kph !== null ? item.avg_speed_kph.toFixed(1) + ' km/h' : 'N/D' }}</td>
+              <td>{{ item.max_speed_kph !== undefined && item.max_speed_kph !== null ? item.max_speed_kph.toFixed(1) + ' km/h' : 'N/D' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<div class="sim-page">
+  <!-- Title & Action Bar -->
+  <header class="sim-header">
+    <div>
+      <h2 class="title"><span class="gradient-text-cyan">Laboratorio de Simulación</span> QSS</h2>
+      <p class="subtitle">Simulador cuasi-estacionario punto-masa por integración de curvatura y fuerzas reales.</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" (click)="runSingleSimulation()"
+        [disabled]="isSimulating || !selectedVehicleId || !selectedVariantId">
+        <span *ngIf="isSimulating" class="mini-spinner"></span>
+        <span>{{ isSimulating ? 'Calculando Física...' : '⚡ Lanzar Simulación' }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Setup Grid: Vehicle Selection, Track Selection, Run Config -->
+  <div class="setup-grid glass-panel">
+    <div class="control-box">
+      <label>1. Vehículo de Serie</label>
+      <select [(ngModel)]="selectedVehicleId" (ngModelChange)="onVehicleChange()" class="sim-select">
+        <option *ngFor="let v of vehicles" [value]="v.id">
+          {{ v.manufacturer?.name }} {{ v.model }} {{ v.variant }} ({{ v.model_year }})
+        </option>
+      </select>
+    </div>
+
+    <div class="control-box">
+      <label>2. Circuito / Trazado</label>
+      <select [(ngModel)]="selectedTrackId" (ngModelChange)="onTrackChange()" class="sim-select">
+        <option *ngFor="let t of tracks" [value]="t.id">
+          {{ t.name }} ({{ t.country_code }})
+        </option>
+      </select>
+    </div>
+
+    <div class="control-box">
+      <label>3. Variante de Trazado</label>
+      <select [(ngModel)]="selectedVariantId" (ngModelChange)="onVariantChange()" class="sim-select">
+        <option *ngFor="let v of currentVariants" [value]="v.id">
+          {{ v.name }} — {{ (v.length_m / 1000).toFixed(2) }} km ({{ v.is_closed_loop ? 'Cerrado' : 'Abierto' }})
+        </option>
+      </select>
+    </div>
+
+    <div class="control-box">
+      <label>4. Velocidad Inicial (km/h)</label>
+      <input type="number" [(ngModel)]="initialSpeedKmh" min="0" max="250" step="10" class="sim-input" />
+    </div>
+  </div>
+
+  <!-- Feedback / Error Banner -->
+  <div *ngIf="errorMessage" class="error-banner">
+    <span>⚠️ {{ errorMessage }}</span>
+    <button class="close-btn" (click)="errorMessage = ''">✕</button>
+  </div>
+
+  <!-- Results Dashboard -->
+  <div *ngIf="simResult" class="results-dashboard">
+    <!-- Telemetry KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card glass-panel main-time">
+        <span class="kpi-label">Tiempo de Vuelta / Tramo</span>
+        <span class="kpi-value time-val">{{ formatTime(simResult.total_time_s) }}</span>
+        <!-- <span class="kpi-sub">{{ simResult.lap_time_formatted }}</span> -->
+      </div>
+
+      <div class="kpi-card glass-panel">
+        <span class="kpi-label">Velocidad Media</span>
+        <span class="kpi-value highlight-cyan">{{ simResult.avg_speed_kph.toFixed(1) }} <small>km/h</small></span>
+      </div>
+
+      <div class="kpi-card glass-panel">
+        <span class="kpi-label">Velocidad Punta</span>
+        <span class="kpi-value highlight-red">{{ simResult.max_speed_kph.toFixed(1) }} <small>km/h</small></span>
+        <span class="kpi-sub">Velocidad máxima alcanzada</span>
+      </div>
+
+      <div class="kpi-card glass-panel">
+        <span class="kpi-label">Velocidad Mínima</span>
+        <span class="kpi-value">{{ simResult.min_speed_kph.toFixed(1) }} <small>km/h</small></span>
+        <span class="kpi-sub">Punto más lento de trazado</span>
+      </div>
+    </div>
+
+    <!-- Sectors Split Times -->
+    <div class="sectors-bar glass-panel" *ngIf="simResult.sector_times_s && simResult.sector_times_s.length > 0">
+      <span class="sectors-title">Sectores:</span>
+      <div class="sectors-chips">
+        <span *ngFor="let s of simResult.sector_times_s; let i = index" class="sector-chip">
+          <b>S{{ i + 1 }}:</b> {{ formatTime(s) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <app-speed-profile-chart
+        [speedProfile]="simResult.speed_profile"
+        [accelProfile]="simResult.accel_profile"
+        [gearProfile]="simResult.gear_profile">
+      </app-speed-profile-chart>
+    </div>
+
+    <!-- Track 2D Map -->
+    <div class="map-container">
+      <app-track-map-viewer [points]="activeVariant?.points || []"
+        [trackName]="activeVariant?.name + ' — ' + selectedVariantId" [trackLengthM]="activeVariant?.length_m || 0"
+        [isClosedLoop]="activeVariant?.is_closed_loop ?? true"></app-track-map-viewer>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+.chart-wrapper {
+  background: rgba(11, 15, 23, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  backdrop-filter: var(--glass-blur);
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dot-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  box-shadow: 0 0 10px var(--accent-red);
+}
+h4 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-highlight);
+}
+.legend-badges {
+  display: flex;
+  gap: 0.75rem;
+}
+.legend-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.color-box {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.torque-box {
+  background: #00d2ff;
+  box-shadow: 0 0 6px rgba(0, 210, 255, 0.6);
+}
+.power-box {
+  background: #ff3344;
+  box-shadow: 0 0 6px rgba(255, 51, 68, 0.6);
+}
+.canvas-container {
+  position: relative;
+  height: 260px;
+  width: 100%;
+}

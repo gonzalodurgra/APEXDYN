@@ -1,0 +1,44 @@
+# Entorno virtual de Python
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Byte-code / Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Variables de entorno y secretos
+.env
+.env.local
+.env.*.local
+
+# Bases de datos locales / temporales
+*.sqlite3
+*.db
+
+# Logs y almacenamiento temporal
+*.log
+logs/
+temp/
+tmp/
+uploads/
+
+# Cobertura y testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# IDEs y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+

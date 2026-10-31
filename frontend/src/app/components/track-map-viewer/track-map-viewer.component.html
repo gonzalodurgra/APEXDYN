@@ -1,0 +1,21 @@
+<div class="map-card">
+  <div class="map-header">
+    <div class="info">
+      <span class="badge" [ngClass]="isClosedLoop ? 'badge-circuit' : 'badge-rally'">
+        {{ isClosedLoop ? 'Circuito Cerrado' : 'Tramo Abierto / Rally' }}
+      </span>
+      <h4>{{ trackName || 'Trazado Geométrico' }}</h4>
+    </div>
+    <div class="stats" *ngIf="points && points.length > 0">
+      <span class="stat-pill">📍 {{ points.length }} nodos</span>
+      <span class="stat-pill">📏 {{ (trackLengthM / 1000).toFixed(2) }} km</span>
+    </div>
+  </div>
+  <div class="canvas-box">
+    <canvas #mapCanvas></canvas>
+    <div class="no-points-overlay" *ngIf="!points || points.length === 0">
+      <p>⚠️ Sin geometría calculada disponible aún.</p>
+      <small>Importa las coordenadas GPS para visualizar el trazado en 2D.</small>
+    </div>
+  </div>
+</div>

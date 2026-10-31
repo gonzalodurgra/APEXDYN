@@ -1,0 +1,39 @@
+<div class="app-layout">
+  <!-- High-Tech Navigation Bar -->
+  <nav class="navbar glass-panel">
+    <div class="nav-brand">
+      <div class="logo-mark">
+        <span class="apex">A</span>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">APEX<span class="gradient-text-red">DYN</span></span>
+        <span class="brand-sub">PHYSICS LAB</span>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a routerLink="/catalog" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">🏎️</span>
+        <span>Catálogo</span>
+      </a>
+      <a routerLink="/simulation" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">⚡</span>
+        <span>Simulador QSS</span>
+      </a>
+      <a routerLink="/comparison" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">⚔️</span>
+        <span>Duelo Cara a Cara</span>
+      </a>
+    </div>
+
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-text">QSS Engine v5.0 Active</span>
+    </div>
+  </nav>
+
+  <!-- Main Content Router Area -->
+  <main class="main-viewport">
+    <router-outlet></router-outlet>
+  </main>
+</div>

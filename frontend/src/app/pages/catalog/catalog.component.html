@@ -1,0 +1,120 @@
+<div class="catalog-page">
+  <!-- Header Controls -->
+  <header class="catalog-header">
+    <div>
+      <h2 class="title"><span class="gradient-text-red">Catálogo Técnico</span> de Vehículos</h2>
+      <p class="subtitle">Especificaciones físicas reales, curvas de banco y dinámica vehicular.</p>
+    </div>
+    <div class="filters-bar">
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"
+        placeholder="Buscar modelo o marca..." class="search-input" />
+      <select [(ngModel)]="selectedDrivetrain" (ngModelChange)="loadVehicles()" class="select-filter">
+        <option value="">Toda Tracción</option>
+        <option value="RWD">RWD (Trasera)</option>
+        <option value="AWD">AWD (Total)</option>
+        <option value="FWD">FWD (Delantera)</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Main Layout: Grid of Vehicles + Detailed Inspector -->
+  <div class="catalog-layout">
+    <!-- Vehicles List Grid -->
+    <div class="vehicles-grid">
+      <div *ngFor="let v of vehicles" class="vehicle-card glass-panel" [class.selected]="selectedVehicle?.id === v.id"
+        (click)="selectVehicle(v)">
+        <div class="card-header">
+          <span class="mfg-badge">{{ v.manufacturer?.name || 'Fabricante' }}</span>
+          <span class="badge" [ngClass]="'badge-' + v.drive_type?.toLowerCase()">{{ v.drive_type }}</span>
+        </div>
+        <h3 class="model-title">{{ v.model }} <span class="variant">{{ v.variant }}</span></h3>
+        <div class="year-gen">{{ v.model_year }} • {{ v.generation || 'Serie' }}</div>
+
+        <div class="specs-mini-grid">
+          <div class="spec-item">
+            <span class="spec-label">Potencia</span>
+            <span class="spec-val">{{ v.engine ? (v.engine.max_power_kw * 1.35962).toFixed(0) + ' CV' : '—' }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Masa</span>
+            <span class="spec-val">{{ v.mass_kg }} kg</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Relación</span>
+            <span class="spec-val">{{ v.engine ? (v.mass_kg / (v.engine.max_power_kw * 1.35962)).toFixed(2) + ' kg/CV' :
+              '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando vehículos...</p>
+      </div>
+
+      <div *ngIf="!loading && vehicles.length === 0" class="empty-state">
+        <p>No se encontraron vehículos para el filtro indicado.</p>
+      </div>
+    </div>
+
+    <!-- Detail Inspector Panel -->
+    <div class="detail-panel glass-panel" *ngIf="selectedVehicle">
+      <div class="panel-header">
+        <div>
+          <span class="sub-label">{{ selectedVehicle.manufacturer?.name }} {{ selectedVehicle.model_year }}</span>
+          <h2>{{ selectedVehicle.model }} <span class="gradient-text-red">{{ selectedVehicle.variant }}</span></h2>
+        </div>
+        <span class="badge" [ngClass]="'badge-' + selectedVehicle.drive_type?.toLowerCase()">
+          {{ selectedVehicle.drive_type }}
+        </span>
+      </div>
+
+      <!-- Specs + Image row -->
+      <div class="specs-image-row">
+
+        <!-- Specs Sections -->
+        <div class="specs-columns">
+          <div class="spec-group">
+            <h5>Propulsión &amp; Motor</h5>
+            <div class="row"><span>Nombre:</span> <b>{{ selectedVehicle.engine?.engine_code || 'N/A' }}</b></div>
+            <div class="row"><span>Aspiración:</span> <b>{{ selectedVehicle.engine?.aspiration || 'Atmosférico' }}</b></div>
+            <div class="row"><span>Cilindrada:</span> <b>{{ selectedVehicle.engine?.displacement_cc ?
+                selectedVehicle.engine?.displacement_cc + ' cc' : '—' }}</b></div>
+            <div class="row"><span>Potencia Máxima:</span> <b class="highlight-red">{{ selectedVehicle.engine ?
+                (selectedVehicle.engine.max_power_kw * 1.35962).toFixed(0) + ' CV' : '—' }}</b></div>
+            <div class="row"><span>Par Máximo:</span> <b class="highlight-cyan">{{ selectedVehicle.engine?.max_torque_nm ?
+                selectedVehicle.engine?.max_torque_nm + ' Nm' : '—' }}</b></div>
+            <div class="row"><span>Corte (Redline):</span> <b>{{ selectedVehicle.engine?.max_rpm || '—' }} RPM</b></div>
+          </div>
+
+          <div class="spec-group">
+            <h5>Chasis &amp; Aerodinámica</h5>
+            <div class="row"><span>Masa en vacío:</span> <b>{{ selectedVehicle.mass_kg }} kg</b></div>
+            <div class="row"><span>Reparto Del/Tras:</span> <b>{{ selectedVehicle.front_mass_fraction ?
+                (selectedVehicle.front_mass_fraction * 100).toFixed(0) : "N/A"
+                }}% / {{ selectedVehicle.front_mass_fraction ? ((1 - selectedVehicle.front_mass_fraction) *
+                100).toFixed(0) : "N/A"
+                }}%</b></div>
+            <div class="row"><span>Coef. Cx (Cd):</span> <b>{{ selectedVehicle.aerodynamics?.drag_coefficient_cd }}</b></div>
+            <div class="row"><span>Área Frontal:</span> <b>{{ selectedVehicle.aerodynamics?.frontal_area_m2 }} m²</b></div>
+            <div class="row"><span>Batalla:</span> <b>{{ selectedVehicle.wheelbase_m ? selectedVehicle.wheelbase_m + ' m'
+                : '—' }}</b></div>
+          </div>
+        </div>
+
+        <!-- Vehicle Image -->
+        <div class="image-column" *ngIf="selectedVehicle.image_url">
+          <img [src]="selectedVehicle.image_url" alt="Imagen del vehículo" class="vehicle-image" />
+        </div>
+
+      </div>
+
+      <!-- Dyno Curve Chart -->
+      <div class="chart-section" *ngIf="selectedVehicle.engine">
+        <app-engine-curve-chart [curvePoints]="selectedVehicle.engine.curve_points"
+          [maxPowerKw]="selectedVehicle.engine.max_power_kw"
+          [maxTorqueNm]="selectedVehicle.engine.max_torque_nm"></app-engine-curve-chart>
+      </div>
+    </div>
+  </div>
+</div>

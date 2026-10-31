@@ -12,8 +12,8 @@ from app.core.database import engine
 from app.api.v1.api import api_router
 
 # Directorio de imágenes estáticas (se crea si no existe)
-STATIC_DIR = Path(__file__).resolve().parents[2] / "static" / "vehicle_images"
-STATIC_DIR.mkdir(parents=True, exist_ok=True)
+# STATIC_DIR = Path(__file__).resolve().parents[2] / "static" / "vehicle_images"
+# STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @asynccontextmanager
@@ -38,7 +38,7 @@ app = FastAPI(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Servir imágenes estáticas: GET /static/vehicle_images/<filename>
-app.mount("/static/vehicle_images", StaticFiles(directory=str(STATIC_DIR)), name="vehicle_images")
+# app.mount("/static/vehicle_images", StaticFiles(directory=str(STATIC_DIR)), name="vehicle_images")
 
 # Configuración de CORS para cliente Angular
 if settings.BACKEND_CORS_ORIGINS:

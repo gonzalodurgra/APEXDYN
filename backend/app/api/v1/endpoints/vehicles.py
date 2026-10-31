@@ -20,9 +20,17 @@ from app.services.manufacturer_service import ManufacturerService
 
 router = APIRouter(prefix="/vehicles", tags=["Vehículos"])
 
-# Directorio donde se almacenan las imágenes (relativo al backend)
-IMAGES_DIR = Path(__file__).resolve().parents[5] / "static" / "vehicle_images"
-IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+# Directorio donde se almacenan las imágenes (compatible con Vercel Serverless /tmp)
+import os
+if os.environ.get("VERCEL"):
+    IMAGES_DIR = Path("/tmp/vehicle_images")
+else:
+    IMAGES_DIR = Path(__file__).resolve().parents[5] / "static" / "vehicle_images"
+
+try:
+    IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 # URL base pública con la que el frontend accede a las imágenes
 IMAGES_BASE_URL = "http://localhost:8000/static/vehicle_images"

@@ -31,3 +31,4 @@ docs/
 .env.*
 backend/.env
 frontend/.env
+

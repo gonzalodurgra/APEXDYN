@@ -1,41 +1,35 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python"
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "services": {
+        "app": {
+            "root": ".",
+            "framework": "fastapi"
+        },
+        "backend": {
+            "root": "backend",
+            "framework": "fastapi"
+        },
+        "api": {
+            "root": "backend/api",
+            "framework": "fastapi"
+        },
+        "frontend": {
+            "root": "frontend",
+            "framework": "angular"
+        }
     },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist/frontend/browser"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/docs",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/openapi.json",
-      "dest": "api/index.py"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/dist/frontend/browser/$1"
-    },
-    {
-      "src": "/.*",
-      "dest": "/frontend/dist/frontend/browser/index.html"
-    }
-  ]
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": {
+                "service": "backend"
+            }
+        },
+        {
+            "source": "/(.*)",
+            "destination": {
+                "service": "app"
+            }
+        }
+    ]
 }

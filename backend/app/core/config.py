@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     AWS_REGION: str = os.getenv("AWS_REGION", "us-east-1")
     S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "vehicle-images")
 
+    # Configuración JWT y Acceso Seguro
+    DOCS_API_KEY: str = os.getenv("DOCS_API_KEY")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY")
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))  # 24 horas por defecto
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

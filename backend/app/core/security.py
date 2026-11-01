@@ -51,3 +51,4 @@ def get_current_user_or_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return verify_token(credentials.credentials)
+

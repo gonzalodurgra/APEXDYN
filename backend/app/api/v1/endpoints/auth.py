@@ -36,3 +36,4 @@ def login_for_token(payload: TokenRequest):
         token_type="bearer",
         expires_in_minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
     )
+

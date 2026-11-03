@@ -48,7 +48,7 @@ export class EnduranceComponent implements OnInit {
   errorMessage = '';
   result: EnduranceResult | null = null;
   componentKeys: string[] = [];
-  componentTranslated: object =
+  componentTranslated: Record<string, string> =
     {
       engine: "Motor",
       turbo: "Admisión",

@@ -189,7 +189,7 @@
       <div *ngFor="let key of componentKeys" class="component-card glass-panel"
         [class.failed-comp]="result.components[key].failed">
         <div class="comp-header">
-          <span class="comp-name">{{ componentTranslated[key] | uppercase }}</span>
+          <span class="comp-name">{{ (componentTranslated[key] || key) | uppercase }}</span>
           <span class="badge" [class.badge-danger]="result.components[key].failed"
             [class.badge-warning]="result.components[key].degraded && !result.components[key].failed"
             [class.badge-success]="!result.components[key].failed && !result.components[key].degraded">
@@ -250,7 +250,7 @@
     <div class="failures-list" *ngIf="result.failures.length > 0">
       <div *ngFor="let f of result.failures" class="failure-item glass-panel">
         <span class="fail-lap">Vuelta {{ f.lap }}</span>
-        <span class="fail-comp">{{ componentTranslated[f.component] | uppercase }}</span>
+        <span class="fail-comp">{{ (componentTranslated[f.component] || f.component) | uppercase }}</span>
         <span class="fail-cause">{{ f.cause }}</span>
         <span class="fail-badge" [class.terminal]="f.is_terminal">{{ f.is_terminal ? 'TERMINAL (DNF)' : 'REPARABLE'
           }}</span>

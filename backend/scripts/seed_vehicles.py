@@ -244,6 +244,105 @@ def seed_data():
             ),
         )
 
+        # 5. FERRARI (GT3 / Resistencia de Referencia)
+        ferrari = ManufacturerService.get_by_name(db, "Ferrari")
+        if not ferrari:
+            ferrari = ManufacturerService.create(
+                db,
+                ManufacturerCreate(
+                    name="Ferrari",
+                    country_code="IT",
+                    website="https://www.ferrari.com",
+                    notes="Fabricante italiano con amplia tradición en GT y carreras de resistencia.",
+                ),
+            )
+
+        VehicleService.create(
+            db,
+            VehicleCreate(
+                manufacturer_id=ferrari.id,
+                model="296",
+                generation="F171",
+                variant="GT3",
+                model_year=2023,
+                body_style="coupe",
+                market="Global",
+                mass_kg=1250.0,
+                mass_definition="Dry/Race",
+                front_mass_fraction=0.42,
+                wheelbase_m=2.600,
+                track_width_front_m=1.726,
+                track_width_rear_m=1.710,
+                height_m=1.170,
+                drive_type="RWD",
+                engine=EngineCreate(
+                    vehicle_id=ferrari.id,
+                    engine_code="F163CE 3.0L V6 Turbo",
+                    engine_type="V6",
+                    displacement_cc=2992,
+                    aspiration="twin-turbo",
+                    max_power_kw=441.0,  # ~600 CV BoP GT3
+                    max_power_rpm=7250,
+                    max_torque_nm=710.0,
+                    max_torque_rpm=5500,
+                    max_rpm=8000,
+                    idle_rpm=1100,
+                    curve_points=[
+                        EngineCurvePointCreate(rpm=1100, torque_nm=250.0),
+                        EngineCurvePointCreate(rpm=2500, torque_nm=480.0),
+                        EngineCurvePointCreate(rpm=4000, torque_nm=680.0),
+                        EngineCurvePointCreate(rpm=5500, torque_nm=710.0),
+                        EngineCurvePointCreate(rpm=6800, torque_nm=650.0),
+                        EngineCurvePointCreate(rpm=7250, torque_nm=580.0, power_kw=441.0),
+                        EngineCurvePointCreate(rpm=8000, torque_nm=500.0, power_kw=418.0),
+                    ],
+                ),
+                gearbox=GearboxCreate(
+                    vehicle_id=ferrari.id,
+                    transmission_type="sequential",
+                    gear_count=6,
+                    final_drive_ratio=3.450,
+                    efficiency=0.96,
+                    shift_time_s=0.05,
+                    gears=[
+                        GearRatioCreate(gear_number=1, ratio=3.150),
+                        GearRatioCreate(gear_number=2, ratio=2.300),
+                        GearRatioCreate(gear_number=3, ratio=1.750),
+                        GearRatioCreate(gear_number=4, ratio=1.380),
+                        GearRatioCreate(gear_number=5, ratio=1.140),
+                        GearRatioCreate(gear_number=6, ratio=0.960),
+                    ],
+                ),
+                suspension=SuspensionCreate(
+                    vehicle_id=ferrari.id,
+                    front_type="Double wishbone pushrod",
+                    rear_type="Double wishbone pushrod",
+                    front_spring_rate_n_m=140000.0,
+                    rear_spring_rate_n_m=160000.0,
+                ),
+                aerodynamics=AerodynamicsCreate(
+                    vehicle_id=ferrari.id,
+                    drag_coefficient_cd=0.55,
+                    frontal_area_m2=1.95,
+                    lift_coefficient_cl=-1.45,  # High downforce GT3
+                    front_downforce_fraction=0.44,
+                ),
+                tires=[
+                    TireSetupCreate(
+                        vehicle_id=ferrari.id,
+                        axle="ALL",
+                        tire_brand="Pirelli",
+                        tire_model="P Zero DHF (GT3 Slick)",
+                        tire_category="slick",
+                        width_mm=325,
+                        aspect_ratio=30,
+                        rim_diameter_in=18.0,
+                        rolling_resistance_coefficient=0.009,
+                    )
+                ],
+            ),
+        )
+
         print("Población inicial completada con éxito.")
     finally:
         db.close()

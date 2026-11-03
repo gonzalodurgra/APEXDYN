@@ -21,6 +21,8 @@ from app.schemas.track import (
     TrackConditionCreate,
 )
 
+import numpy as np
+
 
 def generate_nordschleife_gps_points(center_lat=50.3356, center_lon=6.9475, num_points=400):
     """
@@ -285,6 +287,85 @@ def seed_tracks():
                     ),
                 )
                 print("[OK] Geometria de Col de Turini actualizada con exito.")
+
+            # 3. CIRCUIT DE LA SARTHE (24 Horas de Le Mans)
+            existing_lemans = TrackService.get_tracks(db, search="Le Mans")
+            if not existing_lemans:
+                print("Poblando Circuit de la Sarthe (24h de Le Mans)...")
+                lemans_track = TrackService.create_track(
+                    db,
+                    TrackCreate(
+                        name="Circuit des 24 Heures du Mans",
+                        short_name="Le Mans (La Sarthe)",
+                        country_code="FR",
+                        city="Le Mans",
+                        track_type="circuit",
+                        is_active=True,
+                        website="https://www.24h-lemans.com",
+                        notes="Trazado legendario de 13.626 km con largas rectas (Hunaudières) y sectores de alta velocidad.",
+                    ),
+                )
+
+                lemans_variant = TrackService.create_track_variant(
+                    db,
+                    TrackVariantCreate(
+                        track_id=lemans_track.id,
+                        name="Circuit 24 Heures (Modern con Chicanes)",
+                        length_m=13626.0,
+                        direction="clockwise",
+                        turns_count=38,
+                        is_closed_loop=True,
+                        notes="Configuración moderna con chicanes en Hunaudières e Indianápolis.",
+                    ),
+                )
+
+                # Generar traza representativa de Le Mans
+                thetas = np.linspace(0, 2 * math.pi, 250, endpoint=False)
+                # Trazado alargado norte-sur típico de la recta Hunaudières
+                lons_lemans = 0.207 + 0.025 * np.cos(thetas) + 0.01 * np.sin(2 * thetas)
+                lats_lemans = 47.954 + 0.045 * np.sin(thetas)
+                elevs_lemans = 55.0 + 15.0 * np.sin(thetas)
+
+                lemans_points = [
+                    TrackGeometryPointCreate(
+                        sequence=i,
+                        latitude=float(lats_lemans[i]),
+                        longitude=float(lons_lemans[i]),
+                        elevation_m=float(elevs_lemans[i]),
+                    )
+                    for i in range(250)
+                ]
+
+                TrackService.import_and_process_track_geometry(db, lemans_variant.id, lemans_points, is_closed=True)
+
+                TrackService.add_surface_segment(
+                    db,
+                    SurfaceSegmentCreate(
+                        variant_id=lemans_variant.id,
+                        start_distance_m=0.0,
+                        end_distance_m=13626.0,
+                        surface_type="asphalt",
+                        roughness_index=1.05,
+                        wetness=0.0,
+                        notes="Asfalto de circuito permanente y sección de carretera pública de alta adherencia.",
+                    ),
+                )
+
+                TrackService.add_track_condition(
+                    db,
+                    TrackConditionCreate(
+                        variant_id=lemans_variant.id,
+                        recorded_at=datetime.now(timezone.utc),
+                        air_temperature_c=22.0,
+                        surface_temperature_c=29.0,
+                        wetness=0.0,
+                        wind_speed_m_s=3.0,
+                        wind_direction_deg=180.0,
+                        surface_condition="dry",
+                        source="ACO Official Weather Station",
+                    ),
+                )
+                print("[OK] Circuit de la Sarthe poblado con 250 puntos y condiciones.")
 
         print("Población de pistas completada con éxito.")
     finally:

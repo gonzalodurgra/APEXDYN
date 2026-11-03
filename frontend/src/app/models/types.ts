@@ -216,3 +216,93 @@ export interface CompareResponse {
   variant_name?: string;
   track_length_m?: number;
 }
+
+export interface EnduranceRequest {
+  vehicle_id: string;
+  variant_id: string;
+  race_duration_hours?: number;
+  race_laps?: number;
+  race_distance_km?: number;
+  ambient_temp_c?: number;
+  bsfc_g_kwh?: number;
+  initial_fuel_l?: number;
+  power_mode?: number;
+  driver_aggression?: number;
+  strategy?: {
+    tank_capacity_l?: number;
+    fuel_fill_rate_l_s?: number;
+    tire_change_time_s?: number;
+    brake_service_time_s?: number;
+    pit_lane_delta_s?: number;
+    min_fuel_reserve_l?: number;
+    tire_wear_threshold?: number;
+    brake_wear_threshold?: number;
+    repair_on_pit?: boolean;
+    force_pit_laps?: number[];
+  };
+  random_seed?: number;
+}
+
+export interface PitStopOutput {
+  lap: number;
+  race_time_s: number;
+  duration_s: number;
+  fuel_added_l: number;
+  tyres_changed: boolean;
+  brakes_serviced: boolean;
+  repaired_components: string[];
+  reason: string;
+}
+
+export interface FailureEventOutput {
+  lap: number;
+  race_time_s: number;
+  component: string;
+  cause: string;
+  is_terminal: boolean;
+}
+
+export interface ComponentStatusOutput {
+  name: string;
+  wear_percent: number;
+  final_temp_c: number;
+  life_consumed_hours: number;
+  survival_probability: number;
+  failed: boolean;
+  degraded: boolean;
+}
+
+export interface LapTelemetrySummary {
+  lap: number;
+  lap_time_s: number;
+  fuel_remaining_l: number;
+  tyre_wear_percent: number;
+  brake_wear_percent: number;
+  engine_temp_c: number;
+  tyre_temp_c: number;
+  brakes_temp_c: number;
+  pit_time_s: number;
+}
+
+export interface EnduranceResult {
+  vehicle_id: string;
+  variant_id: string;
+  status: string;
+  reason_dnf?: string;
+  terminal_lap: number;
+  total_laps_completed: number;
+  total_distance_km: number;
+  total_race_time_s: number;
+  best_lap_time_s: number;
+  average_lap_time_s: number;
+  fuel_consumed_total_l: number;
+  fuel_consumption_per_lap_l: number;
+  fuel_remaining_l: number;
+  total_pit_stops: number;
+  total_time_in_pits_s: number;
+  finish_probability: number;
+  pit_stops: PitStopOutput[];
+  failures: FailureEventOutput[];
+  components: { [key: string]: ComponentStatusOutput };
+  lap_history: LapTelemetrySummary[];
+}

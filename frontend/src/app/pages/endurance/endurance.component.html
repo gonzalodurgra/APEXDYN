@@ -1,0 +1,234 @@
+<div class="endurance-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="badge-tag">MÓDULO DE FIABILIDAD V1.0</div>
+    <h1 class="title">Simulador de Carreras de <span class="gradient-text">Resistencia</span></h1>
+    <p class="subtitle">
+      Degradación mecánica acumulativa (Weibull), balance térmico por subsistema, gestión de combustible y estrategia en pit lane.
+    </p>
+  </header>
+
+  <!-- Setup Grid -->
+  <div class="setup-grid">
+    <!-- Vehículo y Pista -->
+    <div class="card glass-panel">
+      <h2 class="card-title">🏎️ Vehículo y Trazado</h2>
+      <div class="form-group">
+        <label>Vehículo de Competición</label>
+        <select [(ngModel)]="selectedVehicleId" class="input-control">
+          <option *ngFor="let v of vehicles" [value]="v.id">
+            {{ v.model }} {{ v.variant || '' }} ({{ v.mass_kg }} kg)
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Circuito</label>
+        <select [(ngModel)]="selectedTrackId" (change)="onTrackChange()" class="input-control">
+          <option *ngFor="let t of tracks" [value]="t.id">{{ t.name }} ({{ t.city }}, {{ t.country_code }})</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="variants.length > 0">
+        <label>Variante del Circuito</label>
+        <select [(ngModel)]="selectedVariantId" class="input-control">
+          <option *ngFor="let varItem of variants" [value]="varItem.id">
+            {{ varItem.name }} ({{ (varItem.length_m / 1000).toFixed(2) }} km)
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Parámetros de Carrera -->
+    <div class="card glass-panel">
+      <h2 class="card-title">⏱️ Formato de Carrera</h2>
+      <div class="form-group">
+        <label>Modo de Carrera</label>
+        <div class="radio-toggle">
+          <button type="button" [class.active]="raceMode === 'laps'" (click)="raceMode = 'laps'">Vueltas</button>
+          <button type="button" [class.active]="raceMode === 'hours'" (click)="raceMode = 'hours'">Horas</button>
+          <button type="button" [class.active]="raceMode === 'distance'" (click)="raceMode = 'distance'">Distancia</button>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="raceMode === 'laps'">
+        <label>Número de Vueltas</label>
+        <input type="number" [(ngModel)]="raceLaps" min="1" max="500" class="input-control">
+      </div>
+
+      <div class="form-group" *ngIf="raceMode === 'hours'">
+        <label>Duración (Horas)</label>
+        <input type="number" [(ngModel)]="raceDurationHours" step="0.5" min="0.5" max="24" class="input-control">
+      </div>
+
+      <div class="form-group" *ngIf="raceMode === 'distance'">
+        <label>Distancia Total (km)</label>
+        <input type="number" [(ngModel)]="raceDistanceKm" min="10" max="3000" class="input-control">
+      </div>
+
+      <div class="grid-2col">
+        <div class="form-group">
+          <label>Temp. Ambiente (°C)</label>
+          <input type="number" [(ngModel)]="ambientTempC" class="input-control">
+        </div>
+        <div class="form-group">
+          <label>Modo Potencia (Engine Map)</label>
+          <select [(ngModel)]="powerMode" class="input-control">
+            <option [ngValue]="0.85">Ahorro Extremo (85%)</option>
+            <option [ngValue]="0.95">Ritmo Carrera (95%)</option>
+            <option [ngValue]="1.0">Standard 100%</option>
+            <option [ngValue]="1.05">Push / Attack (105%)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estrategia Pit Stop -->
+    <div class="card glass-panel">
+      <h2 class="card-title">⛽ Estrategia de Boxes (Pit Stop)</h2>
+      <div class="grid-2col">
+        <div class="form-group">
+          <label>Capacidad Tanque (L)</label>
+          <input type="number" [(ngModel)]="tankCapacityL" class="input-control">
+        </div>
+        <div class="form-group">
+          <label>Tasa Repostaje (L/s)</label>
+          <input type="number" [(ngModel)]="fuelFillRateLs" step="0.5" class="input-control">
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="form-group">
+          <label>Umbral Gomas (%)</label>
+          <input type="number" [(ngModel)]="tireWearThreshold" step="0.05" min="0.4" max="0.95" class="input-control">
+        </div>
+        <div class="form-group">
+          <label>Semilla Weibull (Seed)</label>
+          <input type="number" [(ngModel)]="randomSeed" class="input-control">
+        </div>
+      </div>
+
+      <div class="form-check">
+        <label>
+          <input type="checkbox" [(ngModel)]="repairOnPit"> Reparar averías mecánicas viables en boxes
+        </label>
+      </div>
+
+      <button (click)="runSimulation()" [disabled]="loading" class="btn-primary full-width">
+        <span *ngIf="!loading">🚀 Simular Carrera de Resistencia</span>
+        <span *ngIf="loading">Calculando vuelta a vuelta...</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <!-- Resultados -->
+  <div *ngIf="result" class="results-container">
+    <!-- Resumen KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card" [class.dnf-card]="result.status === 'dnf'">
+        <div class="kpi-label">ESTADO DE CARRERA</div>
+        <div class="kpi-val">{{ result.status === 'finished' ? '🏁 FINALIZADA' : '❌ DNF' }}</div>
+        <div class="kpi-sub" *ngIf="result.reason_dnf">{{ result.reason_dnf }}</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">VUELTAS Y DISTANCIA</div>
+        <div class="kpi-val">{{ result.total_laps_completed }} vueltas</div>
+        <div class="kpi-sub">{{ result.total_distance_km }} km recorridos</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">TIEMPO EN PISTA</div>
+        <div class="kpi-val">{{ formatTime(result.total_race_time_s) }}</div>
+        <div class="kpi-sub">Mejor: {{ formatTime(result.best_lap_time_s) }}</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">CONSUMO TOTAL</div>
+        <div class="kpi-val">{{ result.fuel_consumed_total_l }} L</div>
+        <div class="kpi-sub">{{ result.fuel_consumption_per_lap_l }} L / vuelta</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">PARADAS EN BOXES</div>
+        <div class="kpi-val">{{ result.total_pit_stops }} stops</div>
+        <div class="kpi-sub">{{ result.total_time_in_pits_s }}s en pit lane</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">SUPERVIVENCIA ESTIMADA</div>
+        <div class="kpi-val">{{ (result.finish_probability * 100).toFixed(1) }}%</div>
+        <div class="kpi-sub">Confiabilidad mecánica acumulada</div>
+      </div>
+    </div>
+
+    <!-- Estado de Subsistemas Mecánicos -->
+    <div class="section-title">⚙️ Desgaste y Estado Térmico por Subsistema</div>
+    <div class="components-grid">
+      <div *ngFor="let key of componentKeys" class="component-card glass-panel" [class.failed-comp]="result.components[key].failed">
+        <div class="comp-header">
+          <span class="comp-name">{{ key | uppercase }}</span>
+          <span class="badge" [class.badge-danger]="result.components[key].failed" [class.badge-warning]="result.components[key].degraded && !result.components[key].failed" [class.badge-success]="!result.components[key].failed && !result.components[key].degraded">
+            {{ result.components[key].failed ? 'AVERÍA' : (result.components[key].degraded ? 'DEGRADADO' : 'ÓPTIMO') }}
+          </span>
+        </div>
+
+        <div class="progress-bar-bg">
+          <div class="progress-fill" [style.width.%]="result.components[key].wear_percent" [class.progress-danger]="result.components[key].wear_percent > 80"></div>
+        </div>
+        <div class="comp-metrics">
+          <span>Desgaste: <strong>{{ result.components[key].wear_percent }}%</strong></span>
+          <span>Temp: <strong>{{ result.components[key].final_temp_c }} °C</strong></span>
+          <span>Supervivencia: <strong>{{ (result.components[key].survival_probability * 100).toFixed(0) }}%</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registro de Paradas en Boxes -->
+    <div class="section-title" *ngIf="result.pit_stops.length > 0">🏁 Historial de Paradas en Boxes</div>
+    <div class="pit-table-container glass-panel" *ngIf="result.pit_stops.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Vuelta</th>
+            <th>Tiempo Carrera</th>
+            <th>Duración Parada</th>
+            <th>Combustible</th>
+            <th>Neumáticos</th>
+            <th>Frenos</th>
+            <th>Reparaciones</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pit of result.pit_stops">
+            <td><strong>L{{ pit.lap }}</strong></td>
+            <td>{{ formatTime(pit.race_time_s) }}</td>
+            <td>{{ pit.duration_s }}s</td>
+            <td>+{{ pit.fuel_added_l }} L</td>
+            <td>{{ pit.tyres_changed ? '✅ Nuevos' : '—' }}</td>
+            <td>{{ pit.brakes_serviced ? '🔧 Reemplazados' : '—' }}</td>
+            <td>{{ pit.repaired_components.length > 0 ? pit.repaired_components.join(', ') : 'Ninguna' }}</td>
+            <td><span class="reason-pill">{{ pit.reason }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Registro de Fallos y Averías -->
+    <div class="section-title" *ngIf="result.failures.length > 0">⚠️ Registro de Averías e Incidentes</div>
+    <div class="failures-list" *ngIf="result.failures.length > 0">
+      <div *ngFor="let f of result.failures" class="failure-item glass-panel">
+        <span class="fail-lap">Vuelta {{ f.lap }}</span>
+        <span class="fail-comp">{{ f.component | uppercase }}</span>
+        <span class="fail-cause">{{ f.cause }}</span>
+        <span class="fail-badge" [class.terminal]="f.is_terminal">{{ f.is_terminal ? 'TERMINAL (DNF)' : 'REPARABLE' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+

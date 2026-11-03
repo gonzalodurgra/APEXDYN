@@ -94,4 +94,9 @@ export class ApiService {
   getSimulationHistory(variantId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/simulations/history/${variantId}`);
   }
+
+  // Simulación de Resistencia y Fiabilidad
+  runEnduranceSimulation(payload: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "/endurance/simulate", payload);
+  }
 }

@@ -9,6 +9,7 @@ from app.api.v1.endpoints import (
     tracks,
     simulations,
     telemetry,
+    endurance,
 )
 
 api_router = APIRouter()
@@ -20,3 +21,5 @@ api_router.include_router(subsystems.router)
 api_router.include_router(tracks.router)
 api_router.include_router(simulations.router)
 api_router.include_router(telemetry.router)
+api_router.include_router(endurance.router)
+

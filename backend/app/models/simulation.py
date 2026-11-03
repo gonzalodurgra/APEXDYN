@@ -174,7 +174,7 @@ class SimulationRun(Base):
     )
     geometry_version_number: Mapped[Optional[int]] = mapped_column(Integer)
     model_version: Mapped[str] = mapped_column(String(80), nullable=False)
-    simulation_mode: Mapped[str] = mapped_column(String(40), nullable=False)  # vehicle_limit, human_driver
+    simulation_mode: Mapped[str] = mapped_column(String(40), nullable=False)  # vehicle_limit, human_driver, endurance
     predicted_time_s: Mapped[Optional[float]] = mapped_column(Float)
     lower_prediction_s: Mapped[Optional[float]] = mapped_column(Float)
     upper_prediction_s: Mapped[Optional[float]] = mapped_column(Float)
@@ -190,3 +190,44 @@ class SimulationRun(Base):
     vehicle: Mapped["Vehicle"] = relationship(back_populates="simulations")
     variant: Mapped["TrackVariant"] = relationship(back_populates="simulations")
     driver_profile: Mapped[Optional["DriverProfile"]] = relationship()
+
+
+class EnduranceSimulationRun(Base):
+    """Registro histórico y persistencia de simulaciones de resistencia."""
+    __tablename__ = "endurance_simulation_runs"
+    __table_args__ = (
+        Index("ix_endurance_sim_track_vehicle", "variant_id", "vehicle_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    vehicle_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("vehicles.id", ondelete="RESTRICT"), nullable=False
+    )
+    variant_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("track_variants.id", ondelete="RESTRICT"), nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(30), nullable=False)  # finished, dnf
+    reason_dnf: Mapped[Optional[str]] = mapped_column(String(255))
+    total_laps_completed: Mapped[int] = mapped_column(Integer, nullable=False)
+    total_distance_km: Mapped[float] = mapped_column(Float, nullable=False)
+    total_race_time_s: Mapped[float] = mapped_column(Float, nullable=False)
+    best_lap_time_s: Mapped[float] = mapped_column(Float, nullable=False)
+    average_lap_time_s: Mapped[float] = mapped_column(Float, nullable=False)
+    fuel_consumed_total_l: Mapped[float] = mapped_column(Float, nullable=False)
+    total_pit_stops: Mapped[int] = mapped_column(Integer, nullable=False)
+    total_time_in_pits_s: Mapped[float] = mapped_column(Float, nullable=False)
+    finish_probability: Mapped[float] = mapped_column(Float, nullable=False)
+
+    parameters: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    summary_metrics: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    components_status: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    pit_stops: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    vehicle: Mapped["Vehicle"] = relationship()
+    variant: Mapped["TrackVariant"] = relationship()
+

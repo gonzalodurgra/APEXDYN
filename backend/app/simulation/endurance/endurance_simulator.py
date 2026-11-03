@@ -230,8 +230,8 @@ class EnduranceSimulator:
 
                 # Desgaste incremental
                 d_life_consumed = compute_wear_delta(st, conditions, lap_time_s)
-                st.life_consumed += d_life_consumed
-                st.wear_fraction = min(1.0, st.life_consumed / st.life_eta) if st.life_eta > 0 else 1.0
+                st.life_consumed = max(0.0, st.life_consumed + d_life_consumed)
+                st.wear_fraction = max(0.0, min(1.0, st.life_consumed / st.life_eta)) if st.life_eta > 0 else 1.0
 
                 # Check degradación
                 if degradation_check(st):
@@ -283,8 +283,8 @@ class EnduranceSimulator:
                 lap=lap,
                 lap_time_s=round(lap_time_s, 3),
                 fuel_remaining_l=round(fuel_remaining_l, 2),
-                tyre_wear_percent=round(states["tyres"].wear_fraction * 100, 1),
-                brake_wear_percent=round(states["brakes"].wear_fraction * 100, 1),
+                tyre_wear_percent=round(max(0.0, states["tyres"].wear_fraction * 100), 1),
+                brake_wear_percent=round(max(0.0, states["brakes"].wear_fraction * 100), 1),
                 engine_temp_c=round(states["engine"].temperature_c, 1),
                 tyre_temp_c=round(states["tyres"].temperature_c, 1),
                 brakes_temp_c=round(states["brakes"].temperature_c, 1),
@@ -308,10 +308,10 @@ class EnduranceSimulator:
                 p_finish_est *= p_surv
             component_summaries[c_name] = ComponentStatusOutput(
                 name=c_name,
-                wear_percent=round(st.wear_fraction * 100, 1),
+                wear_percent=round(max(0.0, st.wear_fraction * 100), 1),
                 final_temp_c=round(st.temperature_c, 1),
-                life_consumed_hours=round(st.life_consumed, 3),
-                survival_probability=round(p_surv, 4),
+                life_consumed_hours=round(max(0.0, st.life_consumed), 3),
+                survival_probability=round(max(0.0, min(1.0, p_surv)), 4),
                 failed=st.failed,
                 degraded=st.degraded,
             )

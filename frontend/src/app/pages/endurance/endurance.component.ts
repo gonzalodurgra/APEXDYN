@@ -147,10 +147,22 @@ export class EnduranceComponent implements OnInit {
   }
 
   formatTime(seconds: number): string {
-    if (!seconds) return '0:00.000';
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(3);
-    return `${mins}:${secs.padStart(6, '0')}`;
+    if (!seconds || seconds <= 0) return '0:00.000';
+    const totalSecs = Math.floor(seconds);
+    const ms = Math.floor((seconds - totalSecs) * 1000);
+    const hours = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+
+    const msStr = ms.toString().padStart(3, '0');
+    const secsStr = secs.toString().padStart(2, '0');
+
+    if (hours > 0) {
+      const minsStr = mins.toString().padStart(2, '0');
+      return `${hours}:${minsStr}:${secsStr}.${msStr}`;
+    }
+
+    return `${mins}:${secsStr}.${msStr}`;
   }
 }
 

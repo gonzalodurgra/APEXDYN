@@ -111,6 +111,7 @@ def execute_pit_stop(
                 state.failed = False
                 state.degraded = False
                 state.wear_fraction = max(0.0, state.wear_fraction - 0.5)
+                state.life_consumed = state.wear_fraction * state.life_eta
                 repaired_comps.append(comp_name)
 
     ops_duration = max(fuel_time, tire_time) + brake_time + repair_time

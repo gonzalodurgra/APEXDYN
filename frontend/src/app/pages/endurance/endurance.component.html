@@ -85,15 +85,29 @@
 
     <!-- Estrategia Pit Stop -->
     <div class="card glass-panel">
-      <h2 class="card-title">⛽ Estrategia de Boxes (Pit Stop)</h2>
+      <h2 class="card-title">⛽ Combustible y Estrategia de Boxes</h2>
       <div class="grid-2col">
         <div class="form-group">
           <label>Capacidad Tanque (L)</label>
-          <input type="number" [(ngModel)]="tankCapacityL" class="input-control">
+          <input type="number" [(ngModel)]="tankCapacityL" min="20" max="180" class="input-control">
         </div>
+        <div class="form-group">
+          <label>Combustible Inicial (L)</label>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="number" [(ngModel)]="initialFuelL" min="5" [max]="tankCapacityL" class="input-control">
+            <button type="button" (click)="initialFuelL = tankCapacityL" class="btn-sm-action" title="Llenar a tope">Llenar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2col">
         <div class="form-group">
           <label>Tasa Repostaje (L/s)</label>
           <input type="number" [(ngModel)]="fuelFillRateLs" step="0.5" class="input-control">
+        </div>
+        <div class="form-group">
+          <label>Consumo Específico BSFC (g/kWh)</label>
+          <input type="number" [(ngModel)]="bsfcGkwh" min="180" max="400" class="input-control">
         </div>
       </div>
 

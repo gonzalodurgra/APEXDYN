@@ -146,6 +146,24 @@
   transition: opacity 0.2s;
 }
 
+.btn-sm-action {
+  background: rgba(255, 51, 102, 0.2);
+  border: 1px solid rgba(255, 51, 102, 0.5);
+  color: #ff3366;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-sm-action:hover {
+  background: #ff3366;
+  color: #fff;
+}
+
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;

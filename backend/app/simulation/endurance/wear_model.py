@@ -61,9 +61,9 @@ def compute_wear_delta(
     power_w       = conditions.get("power_output_w", 200000.0)
 
     # Factor de temperatura: acelera el desgaste al superar la temperatura máxima
-    # Basado en la ley de Arrhenius simplificada: cada 10°C duplica el desgaste
+    # Basado en la ley de Arrhenius simplificada: cada 30°C multiplica por e
     t_excess = max(0.0, T - state.temp_max_c)
-    thermal_accel = math.exp(t_excess / 30.0)  # 30°C → ×e ≈ ×2.72
+    thermal_accel = math.exp(min(5.0, t_excess / 30.0))  # Tope físico para evitar overflow (máx ~148x)
 
     # Tasa de desgaste base en vida_consumida/segundo → convertir a horas
     dt_h = dt_s / 3600.0

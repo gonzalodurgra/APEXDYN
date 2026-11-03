@@ -39,57 +39,39 @@ def update_temperature(
 ) -> float:
     """Actualiza la temperatura del componente en un paso de tiempo.
 
-    Usa integración Euler de primer orden sobre el modelo de capacidad
-    térmica lumped-parameter.
+    Usa la solución analítica exacta de la ecuación diferencial de 1er orden:
+        C · dT/dt = Q_gen - k_cooling · (T - T_ambient)
 
-    Args:
-        state: Estado mutable del componente (temperature_c se modifica in-place).
-        load_factor: Carga normalizada [0..1] (fracción de la carga máxima).
-        speed_m_s: Velocidad del vehículo en m/s (afecta a la disipación).
-        dt_s: Paso de tiempo en segundos.
+    Solución exacta entre t0 y t0 + dt:
+        T_inf = T_ambient + Q_gen / k_cooling
+        T(t0 + dt) = T_inf + (T(t0) - T_inf) · exp(- (k_cooling / C) · dt)
 
-    Returns:
-        Nueva temperatura del componente en °C.
+    Esto es incondicionalmente estable para cualquier tamaño de paso dt_s (> 0),
+    evitando oscilaciones y divergencias numéricas en frenos y componentes rápidos.
     """
-    if state.thermal_mass_j_k <= 0.0:
+    if state.thermal_mass_j_k <= 0.0 or dt_s <= 0.0:
         return state.temperature_c
 
-    # Calor generado (proporcional a la carga^1.5 para modelos no lineales simples)
-    # La potencia disipada dentro del componente no es perfectamente lineal con la carga
-    q_gen = state.heat_gen_coeff * (load_factor ** 1.5)
+    # Calor generado W
+    q_gen = state.heat_gen_coeff * (max(0.0, load_factor) ** 1.5)
 
-    # Coeficiente de disipación: base + contribución de velocidad (flujo de aire)
-    speed_factor = min(1.0, speed_m_s / _V_REF_M_S)
+    # Coeficiente efectivo de disipación W/K
+    speed_factor = min(1.0, max(0.0, speed_m_s) / _V_REF_M_S)
     effective_cooling = state.cooling_coeff_w_k * (0.4 + 0.6 * speed_factor)
 
-    # Calor disipado
-    delta_t = state.temperature_c - state.temp_ambient_c
-    q_diss = effective_cooling * delta_t
-
-    # dT/dt = (Q_gen - Q_diss) / C
-    dT_dt = (q_gen - q_diss) / state.thermal_mass_j_k
-
-    # Integración Euler (dt_s puede ser >1 para pasos de vuelta completa)
-    # Para dt grandes, subdividir en sub-pasos de 10 s para estabilidad
-    if dt_s > 20.0:
-        sub_dt = 10.0
-        n_sub = int(dt_s / sub_dt)
-        remainder = dt_s - n_sub * sub_dt
-        temp = state.temperature_c
-        for _ in range(n_sub):
-            delta_t_sub = temp - state.temp_ambient_c
-            q_diss_sub = effective_cooling * delta_t_sub
-            dT = (q_gen - q_diss_sub) / state.thermal_mass_j_k * sub_dt
-            temp += dT
-        # Paso restante
-        if remainder > 0:
-            delta_t_sub = temp - state.temp_ambient_c
-            q_diss_sub = effective_cooling * delta_t_sub
-            dT = (q_gen - q_diss_sub) / state.thermal_mass_j_k * remainder
-            temp += dT
-        state.temperature_c = temp
+    if effective_cooling <= 1e-6:
+        # Sin disipación: calentamiento puro
+        state.temperature_c += (q_gen / state.thermal_mass_j_k) * dt_s
     else:
-        state.temperature_c += dT_dt * dt_s
+        # Temperatura de equilibrio asintótico
+        t_equilibrium = state.temp_ambient_c + (q_gen / effective_cooling)
+        # Factor de decaimiento exponencial
+        tau = state.thermal_mass_j_k / effective_cooling
+        decay = math.exp(-min(50.0, dt_s / tau))
+        state.temperature_c = t_equilibrium + (state.temperature_c - t_equilibrium) * decay
+
+    # Clamping físico de seguridad (nunca menor que ambiente ni mayor que 1500°C)
+    state.temperature_c = max(state.temp_ambient_c, min(1500.0, state.temperature_c))
 
     return state.temperature_c
 

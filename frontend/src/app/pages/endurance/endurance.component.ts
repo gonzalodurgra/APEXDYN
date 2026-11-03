@@ -48,6 +48,20 @@ export class EnduranceComponent implements OnInit {
   errorMessage = '';
   result: EnduranceResult | null = null;
   componentKeys: string[] = [];
+  componentTranslated: object =
+    {
+      engine: "Motor",
+      turbo: "Admisión",
+      gearbox: "Caja de cambios",
+      clutch: "Embrague",
+      transmission: "Transmisión",
+      cooling: "Refrigeración",
+      lubrication: "Lubricación",
+      brakes: "Frenos",
+      suspension: "Suspensión",
+      tyres: "Neumáticos",
+      electrical: "Electricidad",
+    }
 
   constructor(private apiService: ApiService) { }
 

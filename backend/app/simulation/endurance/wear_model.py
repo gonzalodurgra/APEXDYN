@@ -51,14 +51,14 @@ def compute_wear_delta(
     T = state.temperature_c
 
     rpm           = conditions.get("rpm", 3000.0)
-    power_frac    = conditions.get("power_fraction", 0.5)
-    lat_g         = conditions.get("lateral_g", 0.5)
-    long_g        = conditions.get("longitudinal_g", 0.3)
-    braking_g     = conditions.get("braking_g", 0.3)
-    speed_m_s     = conditions.get("speed_m_s", 30.0)
-    gear_ch_s     = conditions.get("gear_changes_per_s", 0.05)
-    brake_energy  = conditions.get("brake_energy_w", 50000.0)
-    power_w       = conditions.get("power_output_w", 200000.0)
+    power_frac    = max(0.0, conditions.get("power_fraction", 0.5))
+    lat_g         = abs(conditions.get("lateral_g", 0.5))
+    long_g        = abs(conditions.get("longitudinal_g", 0.3))
+    braking_g     = abs(conditions.get("braking_g", 0.3))
+    speed_m_s     = max(0.0, conditions.get("speed_m_s", 30.0))
+    gear_ch_s     = max(0.0, conditions.get("gear_changes_per_s", 0.05))
+    brake_energy  = max(0.0, conditions.get("brake_energy_w", 50000.0))
+    power_w       = max(0.0, conditions.get("power_output_w", 200000.0))
 
     # Factor de temperatura: acelera el desgaste al superar la temperatura máxima
     # Basado en la ley de Arrhenius simplificada: cada 30°C multiplica por e
@@ -118,7 +118,7 @@ def compute_wear_delta(
     elif name == "tyres":
         # Deslizamiento lateral y longitudinal: el desgaste de neumático se controla
         # también desde tire_model, pero aquí usamos la misma lógica para life_consumed
-        g_total = math.sqrt(lat_g ** 2 + (long_g + braking_g) ** 2)
+        g_total = math.sqrt(lat_g ** 2 + long_g ** 2 + braking_g ** 2)
         wear_rate = (0.3 + 0.7 * min(1.0, g_total / 2.5)) * thermal_accel
 
     elif name == "electrical":
@@ -132,5 +132,5 @@ def compute_wear_delta(
 
     # life_consumed_delta en horas = wear_rate (adimensional ×) × dt_h
     # wear_rate está calibrado para que wear_rate=1.0 consume ~1 vida en η horas
-    return wear_rate * dt_h
+    return max(0.0, wear_rate * dt_h)
 

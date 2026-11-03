@@ -104,7 +104,7 @@ class EnduranceSimulator:
         avg_speed_m_s = base_qss.avg_speed_m_s or 40.0
         max_lat_g = base_qss.max_lateral_g or 1.2
         max_long_g = base_qss.max_longitudinal_accel_g or 0.8
-        max_brake_g = base_qss.max_braking_g or 1.3
+        max_brake_g = abs(base_qss.max_braking_g) if base_qss.max_braking_g else 1.3
         avg_rpm = float(np.mean(base_qss.engine_rpm_profile)) if len(base_qss.engine_rpm_profile) > 0 else 5500.0
 
         # Estimación de potencia media en W (aceleración + arrastre)

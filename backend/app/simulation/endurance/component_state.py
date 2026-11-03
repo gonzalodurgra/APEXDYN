@@ -97,7 +97,7 @@ def default_component_states(ambient_temp_c: float = 25.0) -> Dict[str, Componen
     Transmisión        │ 72     │ 3.0   │ Esfuerzo mecánico constante
     Refrigeración      │ 40     │ 1.5   │ Fallo temprano frecuente (juntas)
     Lubricación        │ 50     │ 2.2   │ Degradación del aceite
-    Frenos             │ 12     │ 1.6   │ Vida útil por disco relativamente corta
+    Frenos             │ 24     │ 1.8   │ Discos WEC/GT: ~24h a ritmo sostenido
     Suspensión         │ 80     │ 3.5   │ Alta β: vida predecible y larga
     Neumáticos         │ 6      │ 2.0   │ Desgaste en pocas horas de carrera
     Sistema eléctrico  │ 90     │ 1.2   │ Fallos tempranos (rodamientos, cableado)
@@ -215,8 +215,8 @@ def default_component_states(ambient_temp_c: float = 25.0) -> Dict[str, Componen
             temp_optimal_c=350.0,
             temp_max_c=700.0,
             temp_critical_c=900.0,
-            life_eta=12.0,
-            life_beta=1.6,
+            life_eta=24.0,           # Discos WEC/GT: ~24 horas de vida a ritmo sostenido
+            life_beta=1.8,
             repair_time_s=180.0,         # Cambio de pastillas
             replacement_time_s=600.0,    # Cambio de disco
             heat_gen_coeff=20000.0,      # Muy alta generación en frenadas

@@ -132,6 +132,10 @@ class EnduranceSimulator:
         reason_dnf: Optional[str] = None
         lap_times: List[float] = []
 
+        # Seguimiento de vida total consumida (no se resetea con servicios) y conteos de servicio
+        total_life_consumed: Dict[str, float] = {c: 0.0 for c in states}
+        services_count: Dict[str, int] = {c: 0 for c in states}
+
         while True:
             # Comprobar límite de carrera
             if target_laps is not None and lap > target_laps:
@@ -232,6 +236,8 @@ class EnduranceSimulator:
                 d_life_consumed = compute_wear_delta(st, conditions, lap_time_s)
                 st.life_consumed = max(0.0, st.life_consumed + d_life_consumed)
                 st.wear_fraction = max(0.0, min(1.0, st.life_consumed / st.life_eta)) if st.life_eta > 0 else 1.0
+                # Vida total acumulada (no se resetea con servicios)
+                total_life_consumed[c_name] = total_life_consumed.get(c_name, 0.0) + d_life_consumed
 
                 # Check degradación
                 if degradation_check(st):
@@ -263,6 +269,8 @@ class EnduranceSimulator:
             pit_time_this_lap = 0.0
             need_pit, pit_reason = should_pit(lap, states, fuel_remaining_l, est_lap_fuel, strategy)
             if need_pit:
+                # Capturar life_consumed antes del pit para detectar qué componentes fueron serviciados
+                life_before_pit = {c: st.life_consumed for c, st in states.items()}
                 states, fuel_remaining_l, pit_dur, record = execute_pit_stop(
                     lap=lap,
                     race_time_s=race_time_s + lap_time_s,
@@ -271,6 +279,10 @@ class EnduranceSimulator:
                     strategy=strategy,
                     reason=pit_reason
                 )
+                # Contabilizar servicios: si life_consumed bajó, el componente fue serviciado
+                for c_name, st in states.items():
+                    if life_before_pit.get(c_name, 0.0) > 0.0 and st.life_consumed < life_before_pit[c_name]:
+                        services_count[c_name] = services_count.get(c_name, 0) + 1
                 pit_time_this_lap = pit_dur
                 total_pit_time_s += pit_dur
                 pit_records.append(record)
@@ -303,7 +315,9 @@ class EnduranceSimulator:
         p_finish_est = 1.0
         component_summaries: Dict[str, ComponentStatusOutput] = {}
         for c_name, st in states.items():
-            p_surv = survival_probability(st.life_consumed, st.life_eta, st.life_beta)
+            # Para la supervivencia usamos la vida total consumida (no la actual del componente)
+            total_lc = total_life_consumed.get(c_name, st.life_consumed)
+            p_surv = survival_probability(total_lc, st.life_eta, st.life_beta)
             if st.repair_time_s == 0:  # Componentes críticos sin reparación en boxes
                 p_finish_est *= p_surv
             component_summaries[c_name] = ComponentStatusOutput(
@@ -311,6 +325,8 @@ class EnduranceSimulator:
                 wear_percent=round(max(0.0, st.wear_fraction * 100), 1),
                 final_temp_c=round(st.temperature_c, 1),
                 life_consumed_hours=round(max(0.0, st.life_consumed), 3),
+                total_life_consumed_hours=round(max(0.0, total_lc), 3),
+                services_count=services_count.get(c_name, 0),
                 survival_probability=round(max(0.0, min(1.0, p_surv)), 4),
                 failed=st.failed,
                 degraded=st.degraded,

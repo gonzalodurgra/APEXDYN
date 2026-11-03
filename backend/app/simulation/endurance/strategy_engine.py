@@ -91,7 +91,15 @@ def execute_pit_stop(
 
     brakes_serviced = False
     brake_time = 0.0
-    if states.get("brakes") and (states["brakes"].wear_fraction >= strategy.brake_wear_threshold or reason == "brake_wear"):
+    brakes_state = states.get("brakes")
+    brake_needs_service = (
+        brakes_state is not None and (
+            brakes_state.wear_fraction >= strategy.brake_wear_threshold
+            or reason in ("brake_wear", "service_brakes")
+            or (brakes_state.failed and brakes_state.repair_time_s > 0)
+        )
+    )
+    if brake_needs_service:
         brakes_serviced = True
         brake_time = strategy.brake_service_time_s
         states["brakes"].wear_fraction = 0.0

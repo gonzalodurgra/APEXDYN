@@ -67,6 +67,8 @@ class ComponentStatusOutput(BaseModel):
     wear_percent: float
     final_temp_c: float
     life_consumed_hours: float
+    total_life_consumed_hours: float  # Vida total consumida incluyendo después de servicios
+    services_count: int               # Número de veces que el componente fue serviciado/cambiado
     survival_probability: float
     failed: bool
     degraded: bool

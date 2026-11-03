@@ -48,7 +48,7 @@ export class EnduranceComponent implements OnInit {
   result: EnduranceResult | null = null;
   componentKeys: string[] = [];
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.loadCatalog();

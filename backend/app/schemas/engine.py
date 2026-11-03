@@ -47,6 +47,7 @@ class EngineBase(AppBaseModel):
     max_torque_rpm: Optional[float] = Field(None, gt=0, description="Régimen de par motor máximo")
     idle_rpm: Optional[float] = Field(None, ge=0, description="Régimen de ralentí")
     max_rpm: Optional[float] = Field(None, gt=0, description="Régimen de corte o límite de revoluciones")
+    bsfc_g_kwh: Optional[float] = Field(None, gt=100.0, le=600.0, description="Consumo específico de combustible al freno (BSFC) en g/kWh")
     power_source: Optional[str] = Field(None, max_length=200, description="ICE, BEV, Hybrid")
     notes: Optional[str] = None
 
@@ -70,6 +71,7 @@ class EngineUpdate(AppBaseModel):
     max_torque_rpm: Optional[float] = None
     idle_rpm: Optional[float] = None
     max_rpm: Optional[float] = None
+    bsfc_g_kwh: Optional[float] = None
     power_source: Optional[str] = None
     notes: Optional[str] = None
 

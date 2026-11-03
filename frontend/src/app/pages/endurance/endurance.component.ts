@@ -13,6 +13,7 @@ import { Vehicle, Track, TrackVariant, EnduranceResult } from '../../models/type
 })
 export class EnduranceComponent implements OnInit {
   vehicles: Vehicle[] = [];
+  selectedVehicle: Vehicle | null = null;
   tracks: Track[] = [];
   selectedVehicleId = '';
   selectedTrackId = '';
@@ -60,6 +61,7 @@ export class EnduranceComponent implements OnInit {
         this.vehicles = res.items || [];
         if (this.vehicles.length > 0) {
           this.selectedVehicleId = this.vehicles[0].id;
+          this.onVehicleChange(this.selectedVehicleId);
         }
       },
       error: (err) => console.error('Error cargando vehículos:', err)
@@ -74,6 +76,32 @@ export class EnduranceComponent implements OnInit {
         }
       },
       error: (err) => console.error('Error cargando trazados:', err)
+    });
+  }
+
+  onVehicleChange(vehicleId: string): void {
+    if (!vehicleId) return;
+    this.apiService.getVehicle(vehicleId).subscribe({
+      next: (vehicle) => {
+        this.selectedVehicle = vehicle;
+        // Asignación directa desde los datos guardados en la BD del vehículo
+        if (vehicle.engine?.bsfc_g_kwh) {
+          this.bsfcGkwh = vehicle.engine.bsfc_g_kwh;
+        } else {
+          const asp = vehicle.engine?.aspiration?.toLowerCase() || '';
+          this.bsfcGkwh = (asp.includes('turbo') || asp.includes('supercharg')) ? 245.0 : 275.0;
+        }
+
+        if (vehicle.fuel_tank_capacity_l) {
+          this.tankCapacityL = vehicle.fuel_tank_capacity_l;
+        } else {
+          this.tankCapacityL = vehicle.mass_kg > 1600 ? 80.0 : (vehicle.mass_kg < 1200 ? 50.0 : 65.0);
+        }
+
+        // El combustible inicial se llena por defecto a la capacidad de tanque del vehículo
+        this.initialFuelL = this.tankCapacityL;
+      },
+      error: (err) => console.error('Error cargando detalles del vehículo:', err)
     });
   }
 

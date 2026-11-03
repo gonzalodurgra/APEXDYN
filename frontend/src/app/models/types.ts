@@ -23,6 +23,7 @@ export interface Engine {
   max_torque_rpm?: number;
   max_rpm: number;
   idle_rpm: number;
+  bsfc_g_kwh?: number;
   curve_points: EngineCurvePoint[];
 }
 
@@ -89,6 +90,7 @@ export interface Vehicle {
   ground_clearance_m?: number;
   seats?: number;
   doors?: number;
+  fuel_tank_capacity_l?: number;
   drive_type?: string; // RWD, FWD, AWD
   differential_type?: string;
   steering_type?: string;
@@ -267,6 +269,8 @@ export interface ComponentStatusOutput {
   wear_percent: number;
   final_temp_c: number;
   life_consumed_hours: number;
+  total_life_consumed_hours?: number;
+  services_count?: number;
   survival_probability: number;
   failed: boolean;
   degraded: boolean;

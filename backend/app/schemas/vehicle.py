@@ -44,6 +44,7 @@ class VehicleBase(AppBaseModel):
     ground_clearance_m: Optional[float] = Field(None, gt=0)
     seats: Optional[int] = Field(None, ge=1, le=9)
     doors: Optional[int] = Field(None, ge=0, le=6)
+    fuel_tank_capacity_l: Optional[float] = Field(None, gt=0, le=300, description="Capacidad del tanque de combustible en litros")
 
     # Chasis, tracción y frenos
     drive_type: Optional[str] = Field(None, max_length=20, description="FWD, RWD, AWD, 4WD")
@@ -97,6 +98,7 @@ class VehicleUpdate(AppBaseModel):
     ground_clearance_m: Optional[float] = None
     seats: Optional[int] = None
     doors: Optional[int] = None
+    fuel_tank_capacity_l: Optional[float] = None
     drive_type: Optional[str] = None
     differential_type: Optional[str] = None
     steering_type: Optional[str] = None

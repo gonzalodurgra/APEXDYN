@@ -15,7 +15,7 @@
       <h2 class="card-title">🏎️ Vehículo y Trazado</h2>
       <div class="form-group">
         <label>Vehículo de Competición</label>
-        <select [(ngModel)]="selectedVehicleId" class="input-control">
+        <select [(ngModel)]="selectedVehicleId" (ngModelChange)="onVehicleChange($event)" class="input-control">
           <option *ngFor="let v of vehicles" [value]="v.id">
             {{ v.model }} {{ v.variant || '' }} ({{ v.mass_kg }} kg)
           </option>
@@ -196,6 +196,9 @@
         </div>
         <div class="comp-metrics">
           <span>Desgaste: <strong>{{ result.components[key].wear_percent }}%</strong></span>
+          <span *ngIf="result.components[key].services_count && result.components[key].services_count! > 0" class="badge-service" title="Reemplazado en pit stop">
+            🔄 {{ result.components[key].services_count }} cambio(s)
+          </span>
           <span>Temp: <strong>{{ result.components[key].final_temp_c }} °C</strong></span>
           <span>Supervivencia: <strong>{{ (result.components[key].survival_probability * 100).toFixed(0) }}%</strong></span>
         </div>

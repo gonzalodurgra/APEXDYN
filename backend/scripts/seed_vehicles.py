@@ -46,6 +46,7 @@ def seed_data():
                 market="EU",
                 mass_kg=1435.0,
                 mass_definition="DIN",
+                fuel_tank_capacity_l=64.0,
                 front_mass_fraction=0.38,
                 wheelbase_m=2.457,
                 front_track_m=1.601,
@@ -73,6 +74,7 @@ def seed_data():
                     max_torque_rpm=6100.0,
                     idle_rpm=800.0,
                     max_rpm=9000.0,
+                    bsfc_g_kwh=275.0,
                     curve_points=[
                         EngineCurvePointCreate(rpm=2000, torque_nm=330.0),
                         EngineCurvePointCreate(rpm=3000, torque_nm=380.0),
@@ -166,6 +168,7 @@ def seed_data():
                 market="EU",
                 mass_kg=1280.0,
                 mass_definition="DIN",
+                fuel_tank_capacity_l=50.0,
                 front_mass_fraction=0.60,
                 wheelbase_m=2.560,
                 front_track_m=1.536,
@@ -190,6 +193,7 @@ def seed_data():
                     max_torque_rpm=3000.0,
                     idle_rpm=850.0,
                     max_rpm=7200.0,
+                    bsfc_g_kwh=240.0,
                     curve_points=[
                         EngineCurvePointCreate(rpm=2000, torque_nm=280.0),
                         EngineCurvePointCreate(rpm=3000, torque_nm=360.0),
@@ -269,6 +273,7 @@ def seed_data():
                 market="Global",
                 mass_kg=1250.0,
                 mass_definition="Dry/Race",
+                fuel_tank_capacity_l=120.0,
                 front_mass_fraction=0.42,
                 wheelbase_m=2.600,
                 track_width_front_m=1.726,
@@ -287,6 +292,7 @@ def seed_data():
                     max_torque_rpm=5500,
                     max_rpm=8000,
                     idle_rpm=1100,
+                    bsfc_g_kwh=235.0,
                     curve_points=[
                         EngineCurvePointCreate(rpm=1100, torque_nm=250.0),
                         EngineCurvePointCreate(rpm=2500, torque_nm=480.0),

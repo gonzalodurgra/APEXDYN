@@ -90,6 +90,7 @@ class Vehicle(Base):
     ground_clearance_m: Mapped[Optional[float]] = mapped_column(Float)
     seats: Mapped[Optional[int]] = mapped_column(Integer)
     doors: Mapped[Optional[int]] = mapped_column(Integer)
+    fuel_tank_capacity_l: Mapped[Optional[float]] = mapped_column(Float)
 
     # Chasis, tracción y frenos
     drive_type: Mapped[Optional[str]] = mapped_column(String(20))  # FWD, RWD, AWD, 4WD
@@ -160,6 +161,7 @@ class Engine(Base):
     max_torque_rpm: Mapped[Optional[float]] = mapped_column(Float)
     idle_rpm: Mapped[Optional[float]] = mapped_column(Float)
     max_rpm: Mapped[Optional[float]] = mapped_column(Float)
+    bsfc_g_kwh: Mapped[Optional[float]] = mapped_column(Float)
     power_source: Mapped[Optional[str]] = mapped_column(String(200))
     notes: Mapped[Optional[str]] = mapped_column(Text)
 

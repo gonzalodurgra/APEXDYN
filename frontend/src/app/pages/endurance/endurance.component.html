@@ -4,7 +4,8 @@
     <div class="badge-tag">MÓDULO DE FIABILIDAD V1.0</div>
     <h1 class="title">Simulador de Carreras de <span class="gradient-text">Resistencia</span></h1>
     <p class="subtitle">
-      Degradación mecánica acumulativa (Weibull), balance térmico por subsistema, gestión de combustible y estrategia en pit lane.
+      Degradación mecánica acumulativa (Weibull), balance térmico por subsistema, gestión de combustible y estrategia en
+      pit lane.
     </p>
   </header>
 
@@ -25,7 +26,7 @@
       <div class="form-group">
         <label>Circuito</label>
         <select [(ngModel)]="selectedTrackId" (change)="onTrackChange()" class="input-control">
-          <option *ngFor="let t of tracks" [value]="t.id">{{ t.name }} ({{ t.city }}, {{ t.country_code }})</option>
+          <option *ngFor="let t of tracks" [value]="t.id">{{ t.name }} ({{ t.country_code }})</option>
         </select>
       </div>
 
@@ -47,7 +48,8 @@
         <div class="radio-toggle">
           <button type="button" [class.active]="raceMode === 'laps'" (click)="raceMode = 'laps'">Vueltas</button>
           <button type="button" [class.active]="raceMode === 'hours'" (click)="raceMode = 'hours'">Horas</button>
-          <button type="button" [class.active]="raceMode === 'distance'" (click)="raceMode = 'distance'">Distancia</button>
+          <button type="button" [class.active]="raceMode === 'distance'"
+            (click)="raceMode = 'distance'">Distancia</button>
         </div>
       </div>
 
@@ -95,7 +97,8 @@
           <label>Combustible Inicial (L)</label>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <input type="number" [(ngModel)]="initialFuelL" min="5" [max]="tankCapacityL" class="input-control">
-            <button type="button" (click)="initialFuelL = tankCapacityL" class="btn-sm-action" title="Llenar a tope">Llenar</button>
+            <button type="button" (click)="initialFuelL = tankCapacityL" class="btn-sm-action"
+              title="Llenar a tope">Llenar</button>
           </div>
         </div>
       </div>
@@ -183,24 +186,30 @@
     <!-- Estado de Subsistemas Mecánicos -->
     <div class="section-title">⚙️ Desgaste y Estado Térmico por Subsistema</div>
     <div class="components-grid">
-      <div *ngFor="let key of componentKeys" class="component-card glass-panel" [class.failed-comp]="result.components[key].failed">
+      <div *ngFor="let key of componentKeys" class="component-card glass-panel"
+        [class.failed-comp]="result.components[key].failed">
         <div class="comp-header">
-          <span class="comp-name">{{ key | uppercase }}</span>
-          <span class="badge" [class.badge-danger]="result.components[key].failed" [class.badge-warning]="result.components[key].degraded && !result.components[key].failed" [class.badge-success]="!result.components[key].failed && !result.components[key].degraded">
+          <span class="comp-name">{{ componentTranslated[key] | uppercase }}</span>
+          <span class="badge" [class.badge-danger]="result.components[key].failed"
+            [class.badge-warning]="result.components[key].degraded && !result.components[key].failed"
+            [class.badge-success]="!result.components[key].failed && !result.components[key].degraded">
             {{ result.components[key].failed ? 'AVERÍA' : (result.components[key].degraded ? 'DEGRADADO' : 'ÓPTIMO') }}
           </span>
         </div>
 
         <div class="progress-bar-bg">
-          <div class="progress-fill" [style.width.%]="result.components[key].wear_percent" [class.progress-danger]="result.components[key].wear_percent > 80"></div>
+          <div class="progress-fill" [style.width.%]="result.components[key].wear_percent"
+            [class.progress-danger]="result.components[key].wear_percent > 80"></div>
         </div>
         <div class="comp-metrics">
           <span>Desgaste: <strong>{{ result.components[key].wear_percent }}%</strong></span>
-          <span *ngIf="result.components[key].services_count && result.components[key].services_count! > 0" class="badge-service" title="Reemplazado en pit stop">
+          <span *ngIf="result.components[key].services_count && result.components[key].services_count! > 0"
+            class="badge-service" title="Reemplazado en pit stop">
             🔄 {{ result.components[key].services_count }} cambio(s)
           </span>
           <span>Temp: <strong>{{ result.components[key].final_temp_c }} °C</strong></span>
-          <span>Supervivencia: <strong>{{ (result.components[key].survival_probability * 100).toFixed(0) }}%</strong></span>
+          <span>Supervivencia: <strong>{{ (result.components[key].survival_probability * 100).toFixed(0)
+              }}%</strong></span>
         </div>
       </div>
     </div>
@@ -241,11 +250,11 @@
     <div class="failures-list" *ngIf="result.failures.length > 0">
       <div *ngFor="let f of result.failures" class="failure-item glass-panel">
         <span class="fail-lap">Vuelta {{ f.lap }}</span>
-        <span class="fail-comp">{{ f.component | uppercase }}</span>
+        <span class="fail-comp">{{ componentTranslated[f.component] | uppercase }}</span>
         <span class="fail-cause">{{ f.cause }}</span>
-        <span class="fail-badge" [class.terminal]="f.is_terminal">{{ f.is_terminal ? 'TERMINAL (DNF)' : 'REPARABLE' }}</span>
+        <span class="fail-badge" [class.terminal]="f.is_terminal">{{ f.is_terminal ? 'TERMINAL (DNF)' : 'REPARABLE'
+          }}</span>
       </div>
     </div>
   </div>
 </div>
-

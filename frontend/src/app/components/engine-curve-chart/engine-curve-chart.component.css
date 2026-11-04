@@ -61,3 +61,24 @@ h4 {
   height: 260px;
   width: 100%;
 }
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+:host { display: block; min-width: 0; }
+.canvas-container canvas { max-width: 100%; }
+
+@media (min-width: 1600px) {
+  .canvas-container { height: 320px; }
+  h4 { font-size: 1.05rem; }
+}
+
+@media (max-width: 768px) {
+  .chart-wrapper { padding: 0.85rem 0.65rem; }
+  .chart-header { flex-direction: column; align-items: flex-start; gap: 0.4rem; margin-bottom: 0.75rem; }
+  h4 { font-size: 0.88rem; }
+  .legend-badges { gap: 0.6rem; flex-wrap: wrap; }
+  .legend-badge { font-size: 0.7rem; }
+  .canvas-container { height: 230px; }
+}

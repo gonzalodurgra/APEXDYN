@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -13,13 +13,16 @@ import { EngineCurveChartComponent } from '../../components/engine-curve-chart/e
   styleUrl: './catalog.component.css'
 })
 export class CatalogComponent implements OnInit {
+  @ViewChild('chartSection') chartSection!: ElementRef;
+
+  // existing properties
   vehicles: Vehicle[] = [];
   selectedVehicle: Vehicle | null = null;
   loading = false;
   searchQuery = '';
   selectedDrivetrain = '';
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngOnInit(): void {
     this.loadVehicles();
@@ -46,9 +49,16 @@ export class CatalogComponent implements OnInit {
     this.api.getVehicle(v.id).subscribe({
       next: (full) => {
         this.selectedVehicle = full;
+        // Después de cargar, desplazar a la sección del gráfico en dispositivos móviles
+        if (this.chartSection) {
+          this.chartSection.nativeElement.scrollIntoView();
+        };
       },
       error: () => {
         this.selectedVehicle = v;
+        if (this.chartSection) {
+          this.chartSection.nativeElement.scrollIntoView();
+        };
       }
     });
   }

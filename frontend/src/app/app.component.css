@@ -126,3 +126,61 @@
     display: none;
   }
 }
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+.app-layout { overflow-x: clip; }
+.main-viewport { min-width: 0; }
+
+/* Escritorio grande (1920x1080) */
+@media (min-width: 1600px) {
+  .navbar { margin: 1.25rem auto 0; max-width: 1650px; width: calc(100% - 4rem); padding: 0.85rem 1.75rem; }
+  .nav-link { font-size: 0.95rem; padding: 0.6rem 1.15rem; }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .navbar { margin: 0.75rem 1rem 0; padding: 0.65rem 1rem; gap: 0.75rem; }
+  .nav-link { padding: 0.45rem 0.7rem; font-size: 0.8rem; }
+  .status-text { display: none; }
+}
+
+/* Móvil (Redmi 10C: 360px) */
+@media (max-width: 768px) {
+  .navbar {
+    margin: 0.5rem;
+    top: 0.5rem;
+    padding: 0.6rem 0.65rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .nav-brand { gap: 0.6rem; }
+  .logo-mark { width: 32px; height: 32px; }
+  .brand-title { font-size: 1.05rem; }
+
+  /* Barra de pestañas: 4 columnas, icono arriba y texto debajo */
+  .nav-links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+  }
+  .nav-link {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 0.15rem;
+    padding: 0.4rem 0.15rem;
+    font-size: 0.62rem;
+    line-height: 1.15;
+    min-height: 46px;
+    min-width: 0;
+  }
+  .nav-icon { font-size: 1.1rem; line-height: 1; }
+}
+
+@media (max-width: 400px) {
+  .brand-sub { display: none; }
+}

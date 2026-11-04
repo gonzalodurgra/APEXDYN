@@ -241,3 +241,53 @@
     transform: rotate(360deg);
   }
 }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+.compare-page > * { min-width: 0; }
+.table-responsive { -webkit-overflow-scrolling: touch; }
+.dyn-table { min-width: 560px; }
+
+/* Escritorio grande (1920x1080) */
+@media (min-width: 1600px) {
+  .compare-page { max-width: 1750px; padding: 2rem 3rem; gap: 1.75rem; }
+  .title { font-size: 2rem; }
+  .dyn-table td { padding: 1.15rem 1.25rem; font-size: 0.95rem; }
+  .time-cell { font-size: 1.15rem; }
+  .check-pill { padding: 0.6rem 1rem; }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .compare-page { padding: 1.25rem 1rem; }
+  .track-bar { gap: 1rem; }
+}
+
+/* Móvil (360px) */
+@media (max-width: 768px) {
+  .compare-page { padding: 0.75rem 0.65rem 1.5rem; gap: 1rem; }
+  .compare-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .compare-header .btn { width: 100%; min-height: 46px; justify-content: center; }
+  .title { font-size: 1.35rem; line-height: 1.25; }
+  .subtitle { font-size: 0.8rem; }
+
+  .track-bar { flex-direction: column; gap: 0.9rem; padding: 1rem; }
+  .field { min-width: 0; width: 100%; flex: none; }
+  .comp-select { font-size: 16px; min-height: 44px; width: 100%; }
+
+  .vehicles-selection { padding: 1rem; }
+  .checkbox-grid { flex-direction: column; gap: 0.5rem; }
+  .check-pill { width: 100%; padding: 0.7rem 0.85rem; min-height: 46px; }
+  .v-name { flex: 1; min-width: 0; font-size: 0.82rem; line-height: 1.25; }
+
+  .leaderboard { padding: 1rem 0.75rem; }
+  .board-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.9rem; }
+  .board-header h3 { font-size: 1rem; line-height: 1.3; }
+
+  .dyn-table th { padding: 0.55rem 0.6rem; font-size: 0.68rem; white-space: nowrap; }
+  .dyn-table td { padding: 0.7rem 0.6rem; font-size: 0.8rem; white-space: nowrap; }
+  .time-cell { font-size: 0.9rem; }
+  .pos-badge { width: 24px; height: 24px; }
+  .dyn-table td.name-cell { white-space: normal; min-width: 150px; }
+}

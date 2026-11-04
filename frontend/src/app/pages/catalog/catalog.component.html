@@ -77,12 +77,14 @@
           <div class="spec-group">
             <h5>Propulsión &amp; Motor</h5>
             <div class="row"><span>Nombre:</span> <b>{{ selectedVehicle.engine?.engine_code || 'N/A' }}</b></div>
-            <div class="row"><span>Aspiración:</span> <b>{{ selectedVehicle.engine?.aspiration || 'Atmosférico' }}</b></div>
+            <div class="row"><span>Aspiración:</span> <b>{{ selectedVehicle.engine?.aspiration || 'Atmosférico' }}</b>
+            </div>
             <div class="row"><span>Cilindrada:</span> <b>{{ selectedVehicle.engine?.displacement_cc ?
                 selectedVehicle.engine?.displacement_cc + ' cc' : '—' }}</b></div>
             <div class="row"><span>Potencia Máxima:</span> <b class="highlight-red">{{ selectedVehicle.engine ?
                 (selectedVehicle.engine.max_power_kw * 1.35962).toFixed(0) + ' CV' : '—' }}</b></div>
-            <div class="row"><span>Par Máximo:</span> <b class="highlight-cyan">{{ selectedVehicle.engine?.max_torque_nm ?
+            <div class="row"><span>Par Máximo:</span> <b class="highlight-cyan">{{ selectedVehicle.engine?.max_torque_nm
+                ?
                 selectedVehicle.engine?.max_torque_nm + ' Nm' : '—' }}</b></div>
             <div class="row"><span>Corte (Redline):</span> <b>{{ selectedVehicle.engine?.max_rpm || '—' }} RPM</b></div>
           </div>
@@ -95,9 +97,12 @@
                 }}% / {{ selectedVehicle.front_mass_fraction ? ((1 - selectedVehicle.front_mass_fraction) *
                 100).toFixed(0) : "N/A"
                 }}%</b></div>
-            <div class="row"><span>Coef. Cx (Cd):</span> <b>{{ selectedVehicle.aerodynamics?.drag_coefficient_cd }}</b></div>
-            <div class="row"><span>Área Frontal:</span> <b>{{ selectedVehicle.aerodynamics?.frontal_area_m2 }} m²</b></div>
-            <div class="row"><span>Batalla:</span> <b>{{ selectedVehicle.wheelbase_m ? selectedVehicle.wheelbase_m + ' m'
+            <div class="row"><span>Coef. Cx (Cd):</span> <b>{{ selectedVehicle.aerodynamics?.drag_coefficient_cd }}</b>
+            </div>
+            <div class="row"><span>Área Frontal:</span> <b>{{ selectedVehicle.aerodynamics?.frontal_area_m2 }} m²</b>
+            </div>
+            <div class="row"><span>Batalla:</span> <b>{{ selectedVehicle.wheelbase_m ? selectedVehicle.wheelbase_m + '
+                m'
                 : '—' }}</b></div>
           </div>
         </div>
@@ -110,7 +115,7 @@
       </div>
 
       <!-- Dyno Curve Chart -->
-      <div class="chart-section" *ngIf="selectedVehicle.engine">
+      <div #chartSection id="chart" class="chart-section" *ngIf="selectedVehicle.engine">
         <app-engine-curve-chart [curvePoints]="selectedVehicle.engine.curve_points"
           [maxPowerKw]="selectedVehicle.engine.max_power_kw"
           [maxTorqueNm]="selectedVehicle.engine.max_torque_nm"></app-engine-curve-chart>

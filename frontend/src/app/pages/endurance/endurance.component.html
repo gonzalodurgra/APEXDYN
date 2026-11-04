@@ -238,7 +238,7 @@
             <td>+{{ pit.fuel_added_l }} L</td>
             <td>{{ pit.tyres_changed ? '✅ Nuevos' : '—' }}</td>
             <td>{{ pit.brakes_serviced ? '🔧 Reemplazados' : '—' }}</td>
-            <td>{{ pit.repaired_components.length > 0 ? pit.repaired_components.join(', ') : 'Ninguna' }}</td>
+            <td>{{ translateRepairedComponents(pit.repaired_components) }}</td>
             <td><span class="reason-pill">{{ pit.reason }}</span></td>
           </tr>
         </tbody>

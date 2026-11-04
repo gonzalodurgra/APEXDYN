@@ -206,5 +206,12 @@ export class EnduranceComponent implements OnInit {
 
     return `${mins}:${secsStr}.${msStr}`;
   }
+
+  translateRepairedComponents(components: string[]): string {
+    if (!components || components.length === 0) return 'Ninguna';
+    return components
+      .map(comp => this.componentTranslated[comp] || comp)
+      .join(', ');
+  }
 }
 

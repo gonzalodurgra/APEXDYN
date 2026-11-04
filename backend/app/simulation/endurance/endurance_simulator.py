@@ -52,6 +52,78 @@ from app.schemas.endurance import (
     LapTelemetrySummary,
 )
 
+# ---------------------------------------------------------------------------
+# Mapeo y traducción al español de motivos de pit stop y componentes
+# ---------------------------------------------------------------------------
+COMPONENT_NAMES_ES: Dict[str, str] = {
+    "engine": "Motor",
+    "turbo": "Turbo / Admisión",
+    "gearbox": "Caja de cambios",
+    "clutch": "Embrague",
+    "transmission": "Transmisión",
+    "cooling": "Refrigeración",
+    "lubrication": "Lubricación",
+    "brakes": "Frenos",
+    "suspension": "Suspensión",
+    "tyres": "Neumáticos",
+    "electrical": "Sistema eléctrico",
+    "powertrain": "Tren motriz",
+    "fuel_system": "Sistema de combustible",
+}
+
+REASON_TRANSLATIONS: Dict[str, str] = {
+    # Repostaje y paradas programadas
+    "fuel_depleted": "Bajo nivel de combustible (Repostaje)",
+    "scheduled": "Parada programada",
+    "scheduled_lap": "Parada programada por vuelta",
+    "Fuel low": "Bajo nivel de combustible",
+    "Strategy pit": "Parada estratégica",
+    # Desgaste de consumibles estándar
+    "tire_wear": "Desgaste de neumáticos (Cambio de gomas)",
+    "brake_wear": "Desgaste excesivo de frenos",
+    # Reparaciones por avería de módulos / componentes
+    "repair_engine": "Reparación de motor",
+    "repair_turbo": "Reparación de turbo / admisión",
+    "repair_gearbox": "Reparación de caja de cambios",
+    "repair_clutch": "Reparación de embrague",
+    "repair_transmission": "Reparación de transmisión",
+    "repair_cooling": "Reparación de circuito de refrigeración",
+    "repair_lubrication": "Reparación de sistema de lubricación",
+    "repair_brakes": "Reparación del sistema de frenos",
+    "repair_suspension": "Reparación de suspensión",
+    "repair_tyres": "Sustitución de neumáticos dañados",
+    "repair_electrical": "Reparación del sistema eléctrico",
+    # Mantenimiento / servicio por degradación
+    "service_engine": "Mantenimiento preventivo de motor",
+    "service_turbo": "Revisión de turbo / admisión",
+    "service_gearbox": "Mantenimiento de caja de cambios",
+    "service_clutch": "Ajuste / cambio de embrague",
+    "service_transmission": "Servicio de transmisión",
+    "service_cooling": "Purga y servicio de refrigeración",
+    "service_lubrication": "Reposición / cambio de aceite (Lubricación)",
+    "service_brakes": "Sustitución de pastillas / discos de freno",
+    "service_suspension": "Ajuste de suspensión",
+    "service_tyres": "Revisión / cambio de neumáticos",
+    "service_electrical": "Diagnóstico y servicio eléctrico",
+}
+
+def translate_reason(reason: str) -> str:
+    """Traduce cualquier motivo de parada técnica al español."""
+    if not reason:
+        return "Parada en boxes"
+    if reason in REASON_TRANSLATIONS:
+        return REASON_TRANSLATIONS[reason]
+    if reason.startswith("repair_"):
+        comp = reason.replace("repair_", "")
+        comp_es = COMPONENT_NAMES_ES.get(comp, comp)
+        return f"Reparación de {comp_es.lower()}"
+    if reason.startswith("service_"):
+        comp = reason.replace("service_", "")
+        comp_es = COMPONENT_NAMES_ES.get(comp, comp)
+        return f"Mantenimiento de {comp_es.lower()}"
+    return reason
+
+
 class EnduranceSimulator:
     def __init__(self, rng_seed: Optional[int] = 42):
         self.rng = np.random.default_rng(rng_seed)
@@ -271,13 +343,15 @@ class EnduranceSimulator:
             if need_pit:
                 # Capturar life_consumed antes del pit para detectar qué componentes fueron serviciados
                 life_before_pit = {c: st.life_consumed for c, st in states.items()}
+                # Traducir el motivo de la parada a español antes de registrar
+                spanish_reason = translate_reason(pit_reason)
                 states, fuel_remaining_l, pit_dur, record = execute_pit_stop(
                     lap=lap,
                     race_time_s=race_time_s + lap_time_s,
                     states=states,
                     fuel_remaining_l=fuel_remaining_l,
                     strategy=strategy,
-                    reason=pit_reason
+                    reason=spanish_reason
                 )
                 # Contabilizar servicios: si life_consumed bajó, el componente fue serviciado
                 for c_name, st in states.items():

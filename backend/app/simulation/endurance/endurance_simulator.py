@@ -320,17 +320,18 @@ class EnduranceSimulator:
                 if failed:
                     st.failed = True
                     is_terminal = (st.repair_time_s == 0)
+                    comp_es = COMPONENT_NAMES_ES.get(c_name, c_name)
                     failure_events.append(FailureEventOutput(
                         lap=lap,
                         race_time_s=round(race_time_s + lap_time_s, 2),
                         component=c_name,
-                        cause=f"Fallo mecánico de {c_name} (fatiga acumulada / Weibull)",
+                        cause=f"Fallo mecánico de {comp_es.lower()} (fatiga acumulada / Weibull)",
                         is_terminal=is_terminal,
                     ))
                     if is_terminal:
                         terminal_failure = True
                         status = "dnf"
-                        reason_dnf = f"Avería no reparable en pista: {c_name}"
+                        reason_dnf = f"Avería no reparable en pista: {comp_es}"
 
             if terminal_failure:
                 race_time_s += lap_time_s

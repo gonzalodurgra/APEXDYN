@@ -251,7 +251,7 @@
       <div *ngFor="let f of result.failures" class="failure-item glass-panel">
         <span class="fail-lap">Vuelta {{ f.lap }}</span>
         <span class="fail-comp">{{ (componentTranslated[f.component] || f.component) | uppercase }}</span>
-        <span class="fail-cause">{{ f.cause }}</span>
+        <span class="fail-cause">{{ translateCause(f.cause, f.component) }}</span>
         <span class="fail-badge" [class.terminal]="f.is_terminal">{{ f.is_terminal ? 'TERMINAL (DNF)' : 'REPARABLE'
           }}</span>
       </div>

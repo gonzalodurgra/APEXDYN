@@ -213,5 +213,34 @@ export class EnduranceComponent implements OnInit {
       .map(comp => this.componentTranslated[comp] || comp)
       .join(', ');
   }
+
+  translateCause(cause: string, component?: string): string {
+    if (!cause) return '';
+    let translated = cause;
+
+    // Si viene la causa con el nombre en inglés del componente
+    Object.keys(this.componentTranslated).forEach(key => {
+      const spanishName = this.componentTranslated[key];
+      // Reemplazar patrones como "Fallo mecánico de tyres" o referencias directas
+      const regex = new RegExp(`\\b${key}\\b`, 'gi');
+      translated = translated.replace(regex, spanishName.toLowerCase());
+    });
+
+    // Traducciones de causas comunes que pudieran venir en inglés
+    const commonCauses: Record<string, string> = {
+      'out of fuel': 'Sin combustible en pista',
+      'powertrain failure': 'Pérdida total de tracción o rotura de motor/transmisión',
+      'mechanical failure': 'Fallo mecánico',
+      'accumulated fatigue': 'fatiga acumulada',
+      'weibull wear': 'desgaste Weibull',
+    };
+
+    Object.entries(commonCauses).forEach(([en, es]) => {
+      const reg = new RegExp(en, 'gi');
+      translated = translated.replace(reg, es);
+    });
+
+    return translated;
+  }
 }
 

@@ -91,7 +91,7 @@ export interface Vehicle {
   seats?: number;
   doors?: number;
   fuel_tank_capacity_l?: number;
-  pit_fuel_rate_l_s?: number;
+  pit_fuel_fill_rate_l_s?: number;
   pit_tire_wear_threshold?: number;
   drive_type?: string; // RWD, FWD, AWD
   differential_type?: string;

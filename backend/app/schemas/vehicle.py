@@ -46,6 +46,15 @@ class VehicleBase(AppBaseModel):
     doors: Optional[int] = Field(None, ge=0, le=6)
     fuel_tank_capacity_l: Optional[float] = Field(None, gt=0, le=300, description="Capacidad del tanque de combustible en litros")
 
+    # Defaults de estrategia de pit-stop intrínsecos al vehículo
+    pit_fuel_fill_rate_l_s: Optional[float] = Field(None, ge=0.5, le=10.0, description="Caudal de repostaje (L/s)")
+    pit_tire_change_time_s: Optional[float] = Field(None, ge=5.0, le=60.0, description="Tiempo de cambio de 4 neumáticos (s)")
+    pit_brake_service_time_s: Optional[float] = Field(None, ge=30.0, le=600.0, description="Tiempo de sustitución de frenos (s)")
+    pit_lane_delta_s: Optional[float] = Field(None, ge=10.0, le=60.0, description="Tiempo de tránsito por pit lane (s)")
+    pit_min_fuel_reserve_l: Optional[float] = Field(None, ge=1.0, le=20.0, description="Reserva mínima de combustible para forzar parada (L)")
+    pit_tire_wear_threshold: Optional[float] = Field(None, ge=0.2, le=0.95, description="Umbral de desgaste de neumáticos para parada [0-1]")
+    pit_brake_wear_threshold: Optional[float] = Field(None, ge=0.3, le=0.98, description="Umbral de desgaste de frenos para servicio [0-1]")
+
     # Chasis, tracción y frenos
     drive_type: Optional[str] = Field(None, max_length=20, description="FWD, RWD, AWD, 4WD")
     differential_type: Optional[str] = Field(None, max_length=60, description="Open, Mechanical LSD, TorSen, Electronic torque vectoring")
@@ -99,6 +108,8 @@ class VehicleUpdate(AppBaseModel):
     seats: Optional[int] = None
     doors: Optional[int] = None
     fuel_tank_capacity_l: Optional[float] = None
+    pit_fuel_fill_rate_l_s: Optional[float] = None
+    pit_tire_wear_threshold: Optional[float] = None
     drive_type: Optional[str] = None
     differential_type: Optional[str] = None
     steering_type: Optional[str] = None

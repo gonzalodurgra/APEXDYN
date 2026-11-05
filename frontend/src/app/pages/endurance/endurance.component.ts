@@ -112,6 +112,14 @@ export class EnduranceComponent implements OnInit {
           this.tankCapacityL = vehicle.mass_kg > 1600 ? 80.0 : (vehicle.mass_kg < 1200 ? 50.0 : 65.0);
         }
 
+        if (vehicle.pit_fuel_rate_l_s) {
+          this.fuelFillRateLs = vehicle.pit_fuel_rate_l_s;
+        }
+
+        if (vehicle.pit_tire_wear_threshold) {
+          this.tireWearThreshold = vehicle.pit_tire_wear_threshold;
+        }
+
         // El combustible inicial se llena por defecto a la capacidad de tanque del vehículo
         this.initialFuelL = this.tankCapacityL;
       },

@@ -92,6 +92,11 @@ class Vehicle(Base):
     doors: Mapped[Optional[int]] = mapped_column(Integer)
     fuel_tank_capacity_l: Mapped[Optional[float]] = mapped_column(Float)
 
+    # Defaults de estrategia de pit-stop intrínsecos al vehículo
+    # (si son None, el simulador usa sus propios defaults genéricos)
+    pit_fuel_fill_rate_l_s: Mapped[Optional[float]] = mapped_column(Float)   # Caudal de repostaje (L/s)
+    pit_tire_wear_threshold: Mapped[Optional[float]] = mapped_column(Float)  # Umbral desgaste neumáticos [0-1]
+
     # Chasis, tracción y frenos
     drive_type: Mapped[Optional[str]] = mapped_column(String(20))  # FWD, RWD, AWD, 4WD
     differential_type: Mapped[Optional[str]] = mapped_column(String(60))

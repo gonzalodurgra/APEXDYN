@@ -7,7 +7,7 @@ import uuid
 
 class PitStopStrategyInput(BaseModel):
     tank_capacity_l: float = Field(100.0, ge=10.0, le=250.0, description="Capacidad del tanque de combustible (L)")
-    fuel_fill_rate_l_s: float = Field(2.5, ge=0.5, le=10.0, description="Caudal de repostaje (L/s)")
+    fuel_fill_rate_l_s: float = Field(2.5, le=10.0, description="Caudal de repostaje (L/s)")
     tire_change_time_s: float = Field(14.0, ge=5.0, le=60.0, description="Tiempo de cambio de 4 neumáticos (s)")
     brake_service_time_s: float = Field(120.0, ge=30.0, le=600.0, description="Tiempo de sustitución de pastillas/discos (s)")
     pit_lane_delta_s: float = Field(22.0, ge=10.0, le=60.0, description="Tiempo de tránsito por pit lane (s)")

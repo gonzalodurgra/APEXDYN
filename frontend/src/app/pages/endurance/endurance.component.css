@@ -55,6 +55,68 @@
   padding: 1.5rem;
 }
 
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  gap: 0.5rem;
+}
+
+.mini-search-input {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  width: 130px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.mini-search-input:focus {
+  border-color: #ff3366;
+}
+
+.mini-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.mini-page-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.mini-page-btn:hover:not(:disabled) {
+  border-color: #ff3366;
+  background: rgba(255, 51, 102, 0.2);
+}
+
+.mini-page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mini-page-text {
+  font-size: 0.7rem;
+  color: #8b9bb4;
+}
+
 .card-title {
   font-size: 1.15rem;
   font-weight: 700;

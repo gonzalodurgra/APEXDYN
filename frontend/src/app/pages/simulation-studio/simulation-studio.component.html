@@ -17,12 +17,26 @@
   <!-- Setup Grid: Vehicle Selection, Track Selection, Run Config -->
   <div class="setup-grid glass-panel">
     <div class="control-box">
-      <label>1. Vehículo de Serie</label>
-      <select [(ngModel)]="selectedVehicleId" (ngModelChange)="onVehicleChange()" class="sim-select">
+      <div class="box-header">
+        <label>1. Vehículo de Serie</label>
+        <input type="text" [(ngModel)]="vehicleSearchQuery" (ngModelChange)="onVehicleSearchChange()"
+          placeholder="Buscar..." class="sim-filter-input" />
+      </div>
+      <select [(ngModel)]="selectedVehicleId" (ngModelChange)="onVehicleChange()" class="sim-select"
+        [disabled]="loadingVehicles">
         <option *ngFor="let v of vehicles" [value]="v.id">
           {{ v.manufacturer?.name }} {{ v.model }} {{ v.variant }} ({{ v.model_year }})
         </option>
       </select>
+
+      <!-- Mini Paginación -->
+      <div class="mini-pagination" *ngIf="totalPages > 1">
+        <button type="button" class="mini-page-btn" [disabled]="currentPage <= 1 || loadingVehicles"
+          (click)="goToVehiclePage(currentPage - 1)">‹</button>
+        <span class="mini-page-text">{{ currentPage }} / {{ totalPages }} ({{ totalVehicles }})</span>
+        <button type="button" class="mini-page-btn" [disabled]="currentPage >= totalPages || loadingVehicles"
+          (click)="goToVehiclePage(currentPage + 1)">›</button>
+      </div>
     </div>
 
     <div class="control-box">
@@ -94,9 +108,7 @@
     </div>
 
     <div class="chart-container">
-      <app-speed-profile-chart
-        [speedProfile]="simResult.speed_profile"
-        [accelProfile]="simResult.accel_profile"
+      <app-speed-profile-chart [speedProfile]="simResult.speed_profile" [accelProfile]="simResult.accel_profile"
         [gearProfile]="simResult.gear_profile">
       </app-speed-profile-chart>
     </div>

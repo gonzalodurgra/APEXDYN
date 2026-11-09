@@ -16,6 +16,14 @@ export class ComparisonComponent implements OnInit {
   tracks: Track[] = [];
   currentVariants: TrackVariant[] = [];
 
+  // Paginación y filtro de vehículos
+  vehicleSearchQuery = '';
+  currentPage = 1;
+  pageSize = 12;
+  totalVehicles = 0;
+  totalPages = 1;
+  loadingVehicles = false;
+
   selectedTrackId = '';
   selectedVariantId = '';
   selectedVehicleIds: string[] = [];
@@ -32,16 +40,7 @@ export class ComparisonComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
-    this.api.getVehicles(1, 100).subscribe({
-      next: (res) => {
-        this.vehicles = res.items;
-        if (this.vehicles.length >= 2) {
-          this.selectedVehicleIds = [this.vehicles[0].id, this.vehicles[1].id];
-        } else if (this.vehicles.length === 1) {
-          this.selectedVehicleIds = [this.vehicles[0].id];
-        }
-      }
-    });
+    this.loadVehicles();
 
     this.api.getTracks().subscribe({
       next: (res) => {
@@ -53,6 +52,39 @@ export class ComparisonComponent implements OnInit {
         }
       }
     });
+  }
+
+  loadVehicles(page: number = this.currentPage): void {
+    this.currentPage = page;
+    this.loadingVehicles = true;
+    this.api.getVehicles(this.currentPage, this.pageSize, this.vehicleSearchQuery).subscribe({
+      next: (res) => {
+        this.vehicles = res.items;
+        this.totalVehicles = res.total;
+        this.totalPages = res.pages || Math.ceil(res.total / this.pageSize) || 1;
+        // Si no hay ningún vehículo seleccionado en la carga inicial, preseleccionar 2
+        if (this.selectedVehicleIds.length === 0 && this.vehicles.length >= 2) {
+          this.selectedVehicleIds = [this.vehicles[0].id, this.vehicles[1].id];
+        } else if (this.selectedVehicleIds.length === 0 && this.vehicles.length === 1) {
+          this.selectedVehicleIds = [this.vehicles[0].id];
+        }
+        this.loadingVehicles = false;
+      },
+      error: () => {
+        this.loadingVehicles = false;
+      }
+    });
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.loadVehicles(page);
+    }
+  }
+
+  onVehicleSearchChange(): void {
+    this.currentPage = 1;
+    this.loadVehicles(1);
   }
 
   onTrackChange(): void {

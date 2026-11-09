@@ -37,14 +37,46 @@
 
   <!-- Vehicle Checkboxes Grid -->
   <div class="vehicles-selection glass-panel">
-    <label class="section-label">Selecciona 2 o más vehículos para el duelo:</label>
-    <div class="checkbox-grid">
+    <div class="selection-header">
+      <label class="section-label">
+        Selecciona 2 o más vehículos para el duelo
+        <span class="selection-counter" *ngIf="selectedVehicleIds.length > 0">
+          ({{ selectedVehicleIds.length }} seleccionados)
+        </span>:
+      </label>
+      <input type="text" [(ngModel)]="vehicleSearchQuery" (ngModelChange)="onVehicleSearchChange()"
+        placeholder="Filtrar por modelo o marca..." class="vehicle-filter-input" />
+    </div>
+
+    <div *ngIf="loadingVehicles" class="vehicles-loading">
+      <span>Cargando vehículos...</span>
+    </div>
+
+    <div class="checkbox-grid" *ngIf="!loadingVehicles">
       <div *ngFor="let v of vehicles" class="check-pill" [class.checked]="isSelected(v.id)"
         (click)="toggleVehicle(v.id)">
         <span class="chk">{{ isSelected(v.id) ? '✓' : '+' }}</span>
         <span class="v-name">{{ v.manufacturer?.name }} {{ v.model }} {{ v.variant }}</span>
         <span class="badge" [ngClass]="'badge-' + v.drive_type?.toLowerCase()">{{ v.drive_type }}</span>
       </div>
+      <div *ngIf="vehicles.length === 0" class="empty-vehicles">
+        No se encontraron vehículos.
+      </div>
+    </div>
+
+    <!-- Paginación de vehículos -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button class="pagination-btn" [disabled]="currentPage <= 1 || loadingVehicles"
+        (click)="goToPage(currentPage - 1)">
+        ‹ Anterior
+      </button>
+      <span class="pagination-info">
+        Página <b>{{ currentPage }}</b> de <b>{{ totalPages }}</b>
+      </span>
+      <button class="pagination-btn" [disabled]="currentPage >= totalPages || loadingVehicles"
+        (click)="goToPage(currentPage + 1)">
+        Siguiente ›
+      </button>
     </div>
   </div>
 
@@ -52,7 +84,8 @@
   <div *ngIf="compareResult" class="results-area">
     <div class="leaderboard glass-panel">
       <div class="board-header">
-        <h3>Clasificación Final — {{ compareResult.track_name || selectedTrack?.name }} ({{ compareResult.variant_name || selectedVariant?.name }})</h3>
+        <h3>Clasificación Final — {{ compareResult.track_name || selectedTrack?.name }} ({{ compareResult.variant_name
+          || selectedVariant?.name }})</h3>
         <span *ngIf="compareResult.track_length_m || selectedVariant?.length_m" class="badge badge-circuit">
           {{ (((compareResult.track_length_m || selectedVariant?.length_m) || 0) / 1000).toFixed(2) }} km
         </span>
@@ -82,14 +115,17 @@
                 <span *ngIf="item.error" class="error-text"> (Error: {{ item.error }})</span>
               </td>
               <td class="time-cell highlight-red">
-                {{ item.total_time_s !== undefined && item.total_time_s !== null ? formatTime(item.total_time_s) : 'N/D' }}
+                {{ item.total_time_s !== undefined && item.total_time_s !== null ? formatTime(item.total_time_s) : 'N/D'
+                }}
               </td>
               <td class="gap-cell">
                 <span *ngIf="i === 0" class="gap-leader">LÍDER</span>
                 <span *ngIf="i > 0" class="gap-val">+{{ (gapValues[i] || 0).toFixed(3) }}s</span>
               </td>
-              <td>{{ item.avg_speed_kph !== undefined && item.avg_speed_kph !== null ? item.avg_speed_kph.toFixed(1) + ' km/h' : 'N/D' }}</td>
-              <td>{{ item.max_speed_kph !== undefined && item.max_speed_kph !== null ? item.max_speed_kph.toFixed(1) + ' km/h' : 'N/D' }}</td>
+              <td>{{ item.avg_speed_kph !== undefined && item.avg_speed_kph !== null ? item.avg_speed_kph.toFixed(1) + '
+                km/h' : 'N/D' }}</td>
+              <td>{{ item.max_speed_kph !== undefined && item.max_speed_kph !== null ? item.max_speed_kph.toFixed(1) + '
+                km/h' : 'N/D' }}</td>
             </tr>
           </tbody>
         </table>

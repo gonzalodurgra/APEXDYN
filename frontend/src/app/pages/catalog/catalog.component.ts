@@ -22,17 +22,26 @@ export class CatalogComponent implements OnInit {
   searchQuery = '';
   selectedDrivetrain = '';
 
+  // Paginación
+  currentPage = 1;
+  pageSize = 12;
+  totalVehicles = 0;
+  totalPages = 1;
+
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
     this.loadVehicles();
   }
 
-  loadVehicles(): void {
+  loadVehicles(page: number = this.currentPage): void {
+    this.currentPage = page;
     this.loading = true;
-    this.api.getVehicles(1, 50, this.searchQuery, this.selectedDrivetrain).subscribe({
+    this.api.getVehicles(this.currentPage, this.pageSize, this.searchQuery, this.selectedDrivetrain).subscribe({
       next: (res) => {
         this.vehicles = res.items;
+        this.totalVehicles = res.total;
+        this.totalPages = res.pages || Math.ceil(res.total / this.pageSize) || 1;
         if (this.vehicles.length > 0 && !this.selectedVehicle) {
           this.selectVehicle(this.vehicles[0]);
         }
@@ -42,6 +51,12 @@ export class CatalogComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.loadVehicles(page);
+    }
   }
 
   selectVehicle(v: Vehicle): void {
@@ -64,6 +79,12 @@ export class CatalogComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    this.loadVehicles();
+    this.currentPage = 1;
+    this.loadVehicles(1);
+  }
+
+  onDrivetrainChange(): void {
+    this.currentPage = 1;
+    this.loadVehicles(1);
   }
 }

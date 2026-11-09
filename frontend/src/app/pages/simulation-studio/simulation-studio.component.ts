@@ -19,6 +19,14 @@ export class SimulationStudioComponent implements OnInit {
   currentVariants: TrackVariant[] = [];
   activeVariant: TrackVariant | null = null;
 
+  // Paginación y filtro de vehículos
+  vehicleSearchQuery = '';
+  currentPage = 1;
+  pageSize = 12;
+  totalVehicles = 0;
+  totalPages = 1;
+  loadingVehicles = false;
+
   selectedVehicleId = '';
   selectedTrackId = '';
   selectedVariantId = '';
@@ -31,19 +39,33 @@ export class SimulationStudioComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
-    this.loadCatalogData();
+    this.loadVehicles();
+    this.loadTracks();
   }
 
-  loadCatalogData(): void {
-    this.api.getVehicles(1, 100).subscribe({
+  loadVehicles(page: number = this.currentPage): void {
+    this.currentPage = page;
+    this.loadingVehicles = true;
+    this.api.getVehicles(this.currentPage, this.pageSize, this.vehicleSearchQuery).subscribe({
       next: (res) => {
-        this.vehicles = res.items;
+        this.vehicles = res.items || [];
+        this.totalVehicles = res.total;
+        this.totalPages = res.pages || Math.ceil(res.total / this.pageSize) || 1;
         if (this.vehicles.length > 0) {
-          this.selectedVehicleId = this.vehicles[0].id;
+          const exists = this.vehicles.some(v => v.id === this.selectedVehicleId);
+          if (!exists) {
+            this.selectedVehicleId = this.vehicles[0].id;
+          }
         }
+        this.loadingVehicles = false;
+      },
+      error: () => {
+        this.loadingVehicles = false;
       }
     });
+  }
 
+  loadTracks(): void {
     this.api.getTracks().subscribe({
       next: (res) => {
         this.tracks = res.items;
@@ -53,6 +75,17 @@ export class SimulationStudioComponent implements OnInit {
         }
       }
     });
+  }
+
+  goToVehiclePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.loadVehicles(page);
+    }
+  }
+
+  onVehicleSearchChange(): void {
+    this.currentPage = 1;
+    this.loadVehicles(1);
   }
 
   onVehicleChange(): void {

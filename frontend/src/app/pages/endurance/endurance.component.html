@@ -15,12 +15,23 @@
     <div class="card glass-panel">
       <h2 class="card-title">🏎️ Vehículo y Trazado</h2>
       <div class="form-group">
-        <label>Vehículo de Competición</label>
-        <select [(ngModel)]="selectedVehicleId" (ngModelChange)="onVehicleChange($event)" class="input-control">
+        <div class="field-header">
+          <label>Vehículo de Competición</label>
+          <input type="text" [(ngModel)]="vehicleSearchQuery" (ngModelChange)="onVehicleSearchChange()"
+            placeholder="Buscar..." class="mini-search-input" />
+        </div>
+        <select [(ngModel)]="selectedVehicleId" (ngModelChange)="onVehicleChange($event)" class="input-control" [disabled]="loadingVehicles">
           <option *ngFor="let v of vehicles" [value]="v.id">
             {{ v.model }} {{ v.variant || '' }} ({{ v.mass_kg }} kg)
           </option>
         </select>
+
+        <!-- Mini Paginación -->
+        <div class="mini-pagination" *ngIf="totalPages > 1">
+          <button type="button" class="mini-page-btn" [disabled]="currentPage <= 1 || loadingVehicles" (click)="goToVehiclePage(currentPage - 1)">‹</button>
+          <span class="mini-page-text">{{ currentPage }} / {{ totalPages }} ({{ totalVehicles }})</span>
+          <button type="button" class="mini-page-btn" [disabled]="currentPage >= totalPages || loadingVehicles" (click)="goToVehiclePage(currentPage + 1)">›</button>
+        </div>
       </div>
 
       <div class="form-group">

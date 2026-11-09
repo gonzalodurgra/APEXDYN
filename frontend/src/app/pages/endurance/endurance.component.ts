@@ -20,6 +20,14 @@ export class EnduranceComponent implements OnInit {
   variants: TrackVariant[] = [];
   selectedVariantId = '';
 
+  // Paginación y filtro de vehículos
+  vehicleSearchQuery = '';
+  currentPage = 1;
+  pageSize = 12;
+  totalVehicles = 0;
+  totalPages = 1;
+  loadingVehicles = false;
+
   // Formulario de Carrera
   raceMode: 'laps' | 'hours' | 'distance' = 'laps';
   raceLaps = 20;
@@ -66,21 +74,36 @@ export class EnduranceComponent implements OnInit {
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.loadCatalog();
+    this.loadVehicles();
+    this.loadTracks();
   }
 
-  loadCatalog(): void {
-    this.apiService.getVehicles(1, 100).subscribe({
+  loadVehicles(page: number = this.currentPage): void {
+    this.currentPage = page;
+    this.loadingVehicles = true;
+    this.apiService.getVehicles(this.currentPage, this.pageSize, this.vehicleSearchQuery).subscribe({
       next: (res) => {
         this.vehicles = res.items || [];
+        this.totalVehicles = res.total;
+        this.totalPages = res.pages || Math.ceil(res.total / this.pageSize) || 1;
         if (this.vehicles.length > 0) {
-          this.selectedVehicleId = this.vehicles[0].id;
-          this.onVehicleChange(this.selectedVehicleId);
+          // Si el vehículo seleccionado actualmente no está en la página, seleccionamos el primero de la página
+          const exists = this.vehicles.some(v => v.id === this.selectedVehicleId);
+          if (!exists) {
+            this.selectedVehicleId = this.vehicles[0].id;
+            this.onVehicleChange(this.selectedVehicleId);
+          }
         }
+        this.loadingVehicles = false;
       },
-      error: (err) => console.error('Error cargando vehículos:', err)
+      error: (err) => {
+        console.error('Error cargando vehículos:', err);
+        this.loadingVehicles = false;
+      }
     });
+  }
 
+  loadTracks(): void {
     this.apiService.getTracks().subscribe({
       next: (res) => {
         this.tracks = res.items || [];
@@ -91,6 +114,17 @@ export class EnduranceComponent implements OnInit {
       },
       error: (err) => console.error('Error cargando trazados:', err)
     });
+  }
+
+  goToVehiclePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.loadVehicles(page);
+    }
+  }
+
+  onVehicleSearchChange(): void {
+    this.currentPage = 1;
+    this.loadVehicles(1);
   }
 
   onVehicleChange(vehicleId: string): void {

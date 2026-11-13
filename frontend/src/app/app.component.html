@@ -1,7 +1,7 @@
 <div class="app-layout">
   <!-- High-Tech Navigation Bar -->
   <nav class="navbar glass-panel">
-    <div class="nav-brand">
+    <div class="nav-brand" routerLink="/" style="cursor: pointer;">
       <div class="logo-mark">
         <span class="apex">A</span>
       </div>
@@ -12,6 +12,10 @@
     </div>
 
     <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+        <span class="nav-icon">🏠</span>
+        <span>Inicio</span>
+      </a>
       <a routerLink="/catalog" routerLinkActive="active" class="nav-link">
         <span class="nav-icon">🏎️</span>
         <span>Catálogo</span>
@@ -24,7 +28,7 @@
         <span class="nav-icon">⚔️</span>
         <span>Duelo Cara a Cara</span>
       </a>
-      <a routerLink="/endurance" routerLinkActive="active" class="nav-link">
+      <a routerLink="/endurance" routerLinkActive="active" class="nav-link nav-link-endurance">
         <span class="nav-icon">⏱️</span>
         <span>Resistencia</span>
       </a>

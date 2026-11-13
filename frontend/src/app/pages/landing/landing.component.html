@@ -1,0 +1,132 @@
+<div class="landing-container">
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-glow hero-glow-red"></div>
+    <div class="hero-glow hero-glow-cyan"></div>
+
+    <div class="hero-badge animate-fade-in">
+      <span class="badge-dot"></span>
+      <span class="badge-text">PLATA DE SIMULACIÓN DE DINÁMICA VEHICULAR</span>
+      <span class="badge-chip">v5.0 ACTIVE</span>
+    </div>
+
+    <h1 class="hero-title animate-slide-up">
+      INGENIERÍA DE PRECISIÓN <br />
+      <span class="gradient-text-red">EN EL LÍMITE FÍSICO</span>
+    </h1>
+
+    <p class="hero-subtitle animate-slide-up delay-1">
+      ApexDyn combina modelos cuasi-estacionarios (QSS) avanzados, mapas aerodinámicos 
+      multidimensionales y simulación de adherencia no lineal para predecir el comportamiento 
+      óptimo de monoplazas y superdeportivos en pista.
+    </p>
+
+    <div class="hero-actions animate-slide-up delay-2">
+      <a routerLink="/simulation" class="btn btn-primary btn-glow">
+        <span>⚡ Lanzar Simulador</span>
+        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+      <a routerLink="/catalog" class="btn btn-secondary">
+        <span>🏎️ Explorar Vehículos</span>
+      </a>
+    </div>
+
+    <!-- Quick Telemetry / Stats strip -->
+    <div class="stats-strip glass-panel animate-slide-up delay-3">
+      <div class="stat-card" *ngFor="let stat of stats">
+        <div class="stat-value gradient-text-red">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Modules Section -->
+  <section class="section modules-section">
+    <div class="section-header">
+      <span class="section-tag">SUITE DE MÓDULOS</span>
+      <h2 class="section-title">Herramientas Profesionales de Ingeniería de Pista</h2>
+      <p class="section-desc">Diseñado para ingenieros de pista, pilotos virtuales y entusiastas de la dinámica de vehículos.</p>
+    </div>
+
+    <div class="modules-grid">
+      <div class="module-card glass-panel" *ngFor="let item of features">
+        <div class="module-top">
+          <div class="module-icon">{{ item.icon }}</div>
+          <span class="module-tag">{{ item.tag }}</span>
+        </div>
+        <h3 class="module-title">{{ item.title }}</h3>
+        <p class="module-desc">{{ item.description }}</p>
+        <div class="module-footer">
+          <a [routerLink]="item.route" class="module-cta">
+            <span>{{ item.cta }}</span>
+            <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Engine Banner / Architecture Highlights -->
+  <section class="section engine-section glass-panel">
+    <div class="engine-content">
+      <div class="engine-info">
+        <span class="section-tag">ARQUITECTURA DE CÁLCULO</span>
+        <h2 class="section-title">Motor Físico ApexDyn Core</h2>
+        <p class="engine-text">
+          A diferencia de simulaciones simplificadas, ApexDyn resuelve el acoplamiento iterativo
+          entre la transferencia de carga lateral y longitudinal, el mapa de sustentación/arrastre 
+          y los límites de adherencia del neumático mediante optimización no lineal por sectores.
+        </p>
+
+        <div class="tech-specs-list">
+          <div class="tech-spec-item" *ngFor="let spec of techSpecs">
+            <div class="spec-left">
+              <span class="spec-bullet"></span>
+              <span class="spec-name">{{ spec.name }}</span>
+            </div>
+            <span class="spec-category">{{ spec.category }}</span>
+            <span class="spec-badge">{{ spec.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="engine-visual">
+        <div class="radar-box">
+          <div class="radar-circle circle-1"></div>
+          <div class="radar-circle circle-2"></div>
+          <div class="radar-circle circle-3"></div>
+          <div class="radar-crosshair"></div>
+          <div class="telemetry-hud">
+            <div class="hud-item"><span class="hud-label">GG-DIAGRAM</span><span class="hud-val">1.95 G LAT</span></div>
+            <div class="hud-item"><span class="hud-label">DOWNFORCE</span><span class="hud-val">12,450 N &#64; 250 km/h</span></div>
+            <div class="hud-item"><span class="hud-label">SLIP ANGLE</span><span class="hud-val">4.2° OPT</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ready to Simulate CTA Section -->
+  <section class="section cta-section">
+    <div class="cta-box glass-panel">
+      <div class="cta-glow"></div>
+      <h2 class="cta-title">¿Listo para optimizar la vuelta perfecta?</h2>
+      <p class="cta-desc">
+        Selecciona tu vehículo, ajusta setup de carga aerodinámica y ratio de marchas, 
+        y analiza las trazas de telemetría curva a curva.
+      </p>
+      <div class="cta-buttons">
+        <a routerLink="/simulation" class="btn btn-primary btn-glow">
+          ⚡ Ir al Simulador QSS
+        </a>
+        <a routerLink="/comparison" class="btn btn-secondary">
+          ⚔️ Comparar en Cara a Cara
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
